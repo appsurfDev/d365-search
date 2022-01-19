@@ -12,6 +12,8 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
+import Multiselect from 'multiselect-react-dropdown';
+import { SaluationOptions } from './Options.jsx'
 
 const theme = createTheme();
 
@@ -24,11 +26,16 @@ class Main extends React.Component {
     constructor(props) {
         super(props)
         this.onSubmit = this.onSubmit.bind(this)
-        this.onReset = this.onReset.bind(this)
+        this.dsiplaySearch = this.dsiplaySearch.bind(this)
         this.onTextChange = this.onTextChange.bind(this)
+        this.onSelect = this.onSelect.bind(this)
+        this.onRemove = this.onRemove.bind(this)
         this.state = {
+          // search fields
           fullname: '',
           email: '',
+          selectedSalutations: [],
+          // display data
           data: [],
           showData: false,
           loading: false
@@ -43,6 +50,10 @@ class Main extends React.Component {
     onRowClick(event, rowData) {
       console.log("Main onRowClick")
       window.Xrm.Utility.openEntityForm("contact", rowData.contactid, {openInNewWindow: true})
+    }
+
+    dsiplaySearch() {
+      this.setState({ loading:false, showData: false })
     }
 
     onSubmit() {
@@ -81,20 +92,10 @@ class Main extends React.Component {
             self.setState({ 
               data: [],
               loading: false, 
-              showData: false 
+              showData: false
             })
         }
       );
-    }
-
-    onReset() {
-      this.setState({ 
-        loading: true,
-        fullname: '',
-        email: '',
-        data: []
-      })
-      this.setState({ loading: false, showData: false })
     }
 
     onTextChange(e) {
@@ -103,8 +104,16 @@ class Main extends React.Component {
       });
     }
 
+    onSelect(optionName, selectedList) {
+      this.setState({ [optionName]: selectedList })
+    }
+  
+    onRemove(optionName, selectedList) {
+      this.setState({ [optionName]: selectedList })
+    }
+
     render() {
-      const { fullname, email, data, showData, loading } = this.state
+      const { fullname, email, selectedSalutations, data, showData, loading } = this.state
       return (
         <ThemeProvider theme={theme}>
           <Container component="main" maxWidth="xs">
@@ -132,51 +141,54 @@ class Main extends React.Component {
                   Search Page
                 </Typography>
               </Box>
-              <Box component="form" noValidate sx={{ mt: 1 }}>
-                  <Box
-                    sx={{
-                      marginTop: 0,
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <TextField
-                      margin="dense"
-                      fullWidth
-                      id="fullname"
-                      label="Name"
-                      name="fullname"
-                      value={fullname}
-                      size="small"
-                      onChange={this.onTextChange}
-                      style={{ margin: 2 }}
-                    />
-                    <TextField
-                      margin="dense"
-                      fullWidth
-                      name="email"
-                      label="Email"
-                      id="email"
-                      value={email}
-                      size="small"
-                      onChange={this.onTextChange}
-                      style={{ margin: 2 }}
-                    />
-                  </Box>
+              { showData ?  <ReactiveButton
+                  buttonState={ loading ? 'loading' : 'idle' }
+                  idleText="Display Search"
+                  onClick={this.dsiplaySearch}
+                /> : <Box component="form" noValidate sx={{ mt: 1 }}>
+                  
+                  <TextField
+                    margin="dense"
+                    fullWidth
+                    id="fullname"
+                    label="Name"
+                    name="fullname"
+                    value={fullname}
+                    size="small"
+                    onChange={this.onTextChange}
+                    style={{ margin: 2 }}
+                  />
+                  <TextField
+                    margin="dense"
+                    fullWidth
+                    name="email"
+                    label="Email"
+                    id="email"
+                    value={email}
+                    size="small"
+                    onChange={this.onTextChange}
+                    style={{ margin: 2 }}
+                  />
+                  <Multiselect
+                    id='selectedSalutations'
+                    placeholder="Salutations"
+                    options={SaluationOptions} 
+                    selectedValues={selectedSalutations}
+                    showCheckbox={true}
+                    onSelect={(list, item) => this.onSelect('selectedSalutations', list)} 
+                    onRemove={(list, item) => this.onRemove('selectedSalutations', list)}
+                    displayValue="name"
+                    style={{ multiselectContainer: {
+                      margin: 2
+                    }}}
+                  />
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Submit"
                   onClick={this.onSubmit}
+                  style={{ margin: 3 }}
                 />
-                 <ReactiveButton
-                  buttonState={ loading ? 'loading' : 'idle' }
-                  idleText="Reset"
-                  style={{margin: 10}}
-                  color='secondary'
-                  onClick={this.onReset}
-                />
-              </Box>
+              </Box>}
             </Box>
           </Container>
           { showData && <Grid
