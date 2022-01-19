@@ -1,8 +1,6 @@
-
 import React from 'react';
 import MaterialTable from 'material-table';
 import {
-  Button,
   Avatar,
   CssBaseline,
   Box,
@@ -17,6 +15,11 @@ import ReactiveButton from 'reactive-button'
 
 const theme = createTheme();
 
+const tableColumns = [
+  { title: 'Full Name', field: 'fullname' },
+  { title: 'Email', field: 'emailaddress1' }
+]
+
 class Main extends React.Component {
     constructor(props) {
         super(props)
@@ -24,7 +27,7 @@ class Main extends React.Component {
         this.onReset = this.onReset.bind(this)
         this.onTextChange = this.onTextChange.bind(this)
         this.state = {
-          name: '',
+          fullname: '',
           email: '',
           data: [],
           showData: false,
@@ -39,22 +42,55 @@ class Main extends React.Component {
     // custom function
     onRowClick(event, rowData) {
       console.log("Main onRowClick")
-      window.Xrm.Utility.openEntityForm("contact","12f18164-2e57-ec11-8f8f-002248587430", {openInNewWindow: true})
+      window.Xrm.Utility.openEntityForm("contact", rowData.contactid, {openInNewWindow: true})
     }
 
     onSubmit() {
       console.log("Main onSubmit")
+      var self = this
       this.setState({ loading: true, showData: false })
-      this.setState({ 
-        data: [{ name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 }],
-        loading: false, 
-        showData: true })
+
+      const { fullname, email } = this.state
+
+      var Entity = "contact";
+      var Select = "?$select=contactid,fullname,emailaddress1";
+      var Filter = `&$filter=fullname eq '${fullname}' and emailaddress1 eq '${email}'`;
+
+      window.Xrm.WebApi.retrieveMultipleRecords(Entity, Select + Filter).then(
+        function success(result) {
+          console.log("result: ", result)
+          if (result.entities.length === 0) {
+            window.alert("There is no any data match the query.")
+            self.setState({ 
+              data: [],
+              loading: false, 
+              showData: false 
+            })
+          }
+          else {
+            self.setState({ 
+              data: result.entities,
+              loading: false, 
+              showData: true 
+            })
+          }
+        },
+        function (error) {
+            console.log(error.message);
+            window.alert("Error: " + error.message)
+            self.setState({ 
+              data: [],
+              loading: false, 
+              showData: false 
+            })
+        }
+      );
     }
 
     onReset() {
       this.setState({ 
         loading: true,
-        name: '',
+        fullname: '',
         email: '',
         data: []
       })
@@ -63,12 +99,12 @@ class Main extends React.Component {
 
     onTextChange(e) {
       this.setState({
-        [e.target.name]: e.target.value
+        [e.target.id]: e.target.value
       });
     }
 
     render() {
-      const { name, email, data, showData, loading } = this.state
+      const { fullname, email, data, showData, loading } = this.state
       return (
         <ThemeProvider theme={theme}>
           <Container component="main" maxWidth="xs">
@@ -96,28 +132,38 @@ class Main extends React.Component {
                   Search Page
                 </Typography>
               </Box>
-             
               <Box component="form" noValidate sx={{ mt: 1 }}>
-                <TextField
-                  margin="dense"
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  value={name}
-                  size="small"
-                  onChange={this.onTextChange}
-                />
-                <TextField
-                  margin="dense"
-                  fullWidth
-                  name="email"
-                  label="Email"
-                  id="email"
-                  value={email}
-                  size="small"
-                  onChange={this.onTextChange}
-                />
+                  <Box
+                    sx={{
+                      marginTop: 0,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <TextField
+                      margin="dense"
+                      fullWidth
+                      id="fullname"
+                      label="Name"
+                      name="fullname"
+                      value={fullname}
+                      size="small"
+                      onChange={this.onTextChange}
+                      style={{ margin: 2 }}
+                    />
+                    <TextField
+                      margin="dense"
+                      fullWidth
+                      name="email"
+                      label="Email"
+                      id="email"
+                      value={email}
+                      size="small"
+                      onChange={this.onTextChange}
+                      style={{ margin: 2 }}
+                    />
+                  </Box>
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Submit"
@@ -142,12 +188,7 @@ class Main extends React.Component {
             <Grid item xs={12}>
               <MaterialTable
                 onRowClick={this.onRowClick}
-                columns={[
-                  { title: 'Name', field: 'name' },
-                  { title: 'Surname', field: 'surname' },
-                  { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-                  { title: 'Birth City', field: 'birthCity', lookup: { 34: 'test', 63: 'test123' } }
-                ]}
+                columns={tableColumns}
                 data={data}
                 options={{
                   exportFileName: "D365_Search_Result",
