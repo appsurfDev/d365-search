@@ -14,13 +14,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
 import { SaluationOptions } from './Options.jsx'
+import { TableColumns } from './TableConfig.jsx'
 
 const theme = createTheme();
-
-const tableColumns = [
-  { title: 'Full Name', field: 'fullname' },
-  { title: 'Email', field: 'emailaddress1' }
-]
 
 class Main extends React.Component {
     constructor(props) {
@@ -145,6 +141,7 @@ class Main extends React.Component {
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Display Search"
                   onClick={this.dsiplaySearch}
+                  style={{ margin: 3 }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
                   
                   <TextField
@@ -200,7 +197,7 @@ class Main extends React.Component {
             <Grid item xs={12}>
               <MaterialTable
                 onRowClick={this.onRowClick}
-                columns={tableColumns}
+                columns={TableColumns}
                 data={data}
                 options={{
                   exportFileName: "D365_Search_Result",
