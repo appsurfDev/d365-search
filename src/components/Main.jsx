@@ -45,7 +45,7 @@ class Main extends React.Component {
     // custom function
     onRowClick(event, rowData) {
       console.log("Main onRowClick")
-      window.Xrm.Utility.openEntityForm("contact", rowData.contactid, {openInNewWindow: true})
+      window.Xrm.Utility.openEntityForm("contact", rowData.contactid, null, {openInNewWindow: true})
     }
 
     dsiplaySearch() {
