@@ -153,7 +153,7 @@ class Main extends React.Component {
                     value={fullname}
                     size="small"
                     onChange={this.onTextChange}
-                    style={{ margin: 2 }}
+                    style={{ margin: 3 }}
                   />
                   <TextField
                     margin="dense"
@@ -164,7 +164,7 @@ class Main extends React.Component {
                     value={email}
                     size="small"
                     onChange={this.onTextChange}
-                    style={{ margin: 2 }}
+                    style={{ margin: 3 }}
                   />
                   <Multiselect
                     id='selectedSalutations'
@@ -176,7 +176,7 @@ class Main extends React.Component {
                     onRemove={(list, item) => this.onRemove('selectedSalutations', list)}
                     displayValue="name"
                     style={{ multiselectContainer: {
-                      margin: 2
+                      margin: 3
                     }}}
                   />
                 <ReactiveButton
