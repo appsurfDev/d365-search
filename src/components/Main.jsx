@@ -117,6 +117,7 @@ class Main extends React.Component {
             <Box
               sx={{
                 marginTop: 0,
+                marginBottom: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -169,6 +170,7 @@ class Main extends React.Component {
                   <Multiselect
                     id='selectedSalutations'
                     placeholder="Salutations"
+                    hidePlaceholder={true}
                     options={SaluationOptions} 
                     selectedValues={selectedSalutations}
                     showCheckbox={true}
