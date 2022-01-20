@@ -254,9 +254,14 @@ class Main extends React.Component {
                         onSelect={(list, item) => this.onSelect(`selected_${o.schemaName}`, list)} 
                         onRemove={(list, item) => this.onRemove(`selected_${o.schemaName}`, list)}
                         displayValue="value"
-                        style={{ multiselectContainer: {
-                          margin: 3
-                        }}}
+                        style={{ 
+                          multiselectContainer: {
+                            margin: 3
+                          },
+                          searchBox: {
+                            minHeight: 35
+                          }
+                        }}
                       />
                     ))
                   }
