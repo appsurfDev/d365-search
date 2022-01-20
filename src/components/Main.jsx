@@ -13,12 +13,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { TextFieldList } from './TextFieldsConfig'
-import { OptionList } from './OptionSetsConfig.jsx'
-import { TableColumns } from './TableConfig.jsx'
+import { TextFieldList, OptionList, TableColumns, EntityName } from '../Config.jsx'
 
 const theme = createTheme();
-const entityName = "contact"
 
 class Main extends React.Component {
     constructor(props) {
@@ -125,7 +122,7 @@ class Main extends React.Component {
         this.setState({ loading: false, showData: false })
       }
       else{
-        window.Xrm.WebApi.retrieveMultipleRecords(entityName, select + filter).then(
+        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, select + filter).then(
           function success(result) {
             if (result.entities.length === 0) {
               window.alert("There is no any data match the query.")
@@ -177,7 +174,7 @@ class Main extends React.Component {
             <attribute name='attributevalue' />
             <attribute name='value' />
             <filter type='and' >
-              <condition attribute='objecttypecodename' operator='eq' value= '${entityName}' />
+              <condition attribute='objecttypecodename' operator='eq' value= '${EntityName}' />
               <condition attribute='attributename' operator='eq' value= '${schemaName}' />
             </filter>
         </entity>
