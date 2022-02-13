@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { TextFieldList, OptionList, TableColumns, EntityName } from '../Config.jsx'
+import { TableColumns, fieldsConfig, EntityName } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -33,12 +33,18 @@ class Main extends React.Component {
           loading: false
         }
         var self = this
-        TextFieldList.forEach((t) => {
-          self.state[t.schemaName] = ""
-        })
-        OptionList.forEach((o) => {
-          self.state[o.schemaName] = []
-          self.state[`selected_${o.schemaName}`] = []
+        fieldsConfig.forEach((f) => {
+          switch(f.type) {
+            case "string": 
+              self.state[f.schemaName] = ""
+              break;
+            case "optionset": 
+              self.state[f.schemaName] = []
+              self.state[`selected_${f.schemaName}`] = []
+              break;
+            default: 
+              break;
+          }
         })
     }
 
@@ -46,11 +52,19 @@ class Main extends React.Component {
       console.log("Main componentDidMount")
       this.setState({ loading: true })
 
-      for (const o of OptionList) {
-        const results = await this.getOptionSetMetadata(o.schemaName)
-        this.setState({ [o.schemaName]: results })
+      for (const f of fieldsConfig) {
+        switch(f.type) {
+          case "optionset": 
+            const results = await this.getOptionSetMetadata(f.schemaName)
+            this.setState({ [f.schemaName]: results })
+            break;
+          case "lookup": 
+            break;
+          default:
+            break;
+        }
       }
-      
+
       this.setState({ loading: false })
     }
 
@@ -74,47 +88,52 @@ class Main extends React.Component {
       var isNullFilter = true
       var addedFirstFilter = false
       var filter = "&$filter="
-      TextFieldList.forEach((t) => {
-        if(this.state[t.schemaName]) {
-          isNullFilter = false
-          if(this.state[t.schemaName].indexOf(',') === -1){
-            if(addedFirstFilter) {
-              filter += `or contains(${t.schemaName}, '${this.state[t.schemaName]}')`
-            }
-            else{
-              addedFirstFilter = true
-              filter += `contains(${t.schemaName}, '${this.state[t.schemaName]}')`
-            }
-          }
-          else {
-            var strs = this.state[t.schemaName].split(',');
-            strs.forEach((s) => {
-              if(addedFirstFilter) {
-                filter += `or contains(${t.schemaName}, '${s}')`
+      fieldsConfig.forEach((f) => {
+        switch(f.type) {
+          case "string": 
+            if(this.state[f.schemaName]) {
+              isNullFilter = false
+              if(this.state[f.schemaName].indexOf(',') === -1){
+                if(addedFirstFilter) {
+                  filter += `or contains(${f.schemaName}, '${this.state[f.schemaName]}')`
+                }
+                else{
+                  addedFirstFilter = true
+                  filter += `contains(${f.schemaName}, '${this.state[f.schemaName]}')`
+                }
               }
-              else{
-                addedFirstFilter = true
-                filter += `contains(${t.schemaName}, '${s}')`
+              else {
+                var strs = this.state[f.schemaName].split(',');
+                strs.forEach((s) => {
+                  if(addedFirstFilter) {
+                    filter += `or contains(${f.schemaName}, '${s}')`
+                  }
+                  else{
+                    addedFirstFilter = true
+                    filter += `contains(${f.schemaName}, '${s}')`
+                  }
+                })
               }
-            })
-          }
-        }
-      })
-
-      OptionList.forEach((o) => {
-        if(this.state[`selected_${o.schemaName}`].length > 0) {
-          isNullFilter = false
-          this.state[`selected_${o.schemaName}`].forEach((so) => {
-            if(addedFirstFilter) {
-              filter += `or ${o.schemaName} eq ${so.attributevalue}`
             }
-            else{
-              addedFirstFilter = true
-              filter += `${o.schemaName} eq ${so.attributevalue}`
+            break;
+          case "optionset": 
+            if(this.state[`selected_${f.schemaName}`].length > 0) {
+              isNullFilter = false
+              this.state[`selected_${f.schemaName}`].forEach((so) => {
+                if(addedFirstFilter) {
+                  filter += `or ${f.schemaName} eq ${so.attributevalue}`
+                }
+                else{
+                  addedFirstFilter = true
+                  filter += `${f.schemaName} eq ${so.attributevalue}`
+                }
+              })
             }
-          })
+            break;
+          default:
+            break;
         }
-      })
+      });
 
       console.log("filter: ", filter)
       if(isNullFilter) {
@@ -228,42 +247,50 @@ class Main extends React.Component {
                   style={{ margin: 3 }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
                   {
-                    TextFieldList.map((t) => (
-                      <TextField
-                        margin="dense"
-                        fullWidth
-                        id={t.schemaName}
-                        label={t.displayName}
-                        name={t.schemaName}
-                        value={this.state[t.schemaName]}
-                        size="small"
-                        onChange={this.onTextChange}
-                        style={{ margin: 3 }}
-                      />
-                    ))
-                  }
-                  {
-                    OptionList.map((o) => (
-                      <Multiselect
-                        id={o.schemaName}
-                        placeholder={o.displayName}
-                        hidePlaceholder={true}
-                        options={this.state[o.schemaName]} 
-                        selectedValues={this.state[`selected_${o.schemaName}`]}
-                        showCheckbox={true}
-                        onSelect={(list, item) => this.onSelect(`selected_${o.schemaName}`, list)} 
-                        onRemove={(list, item) => this.onRemove(`selected_${o.schemaName}`, list)}
-                        displayValue="value"
-                        style={{ 
-                          multiselectContainer: {
-                            margin: 3
-                          },
-                          searchBox: {
-                            minHeight: 35
-                          }
-                        }}
-                      />
-                    ))
+                    fieldsConfig.map((f) => {
+                      switch(f.type) {
+                        case "string":
+                          return (
+                            <TextField
+                              margin="dense"
+                              fullWidth
+                              id={f.schemaName}
+                              label={f.displayName}
+                              name={f.schemaName}
+                              value={this.state[f.schemaName]}
+                              size="small"
+                              onChange={this.onTextChange}
+                              style={{ margin: 3 }}
+                            />
+                          )
+                        case "optionset":
+                          return (
+                            <Multiselect
+                              id={f.schemaName}
+                              placeholder={f.displayName}
+                              hidePlaceholder={true}
+                              options={this.state[f.schemaName]} 
+                              selectedValues={this.state[`selected_${f.schemaName}`]}
+                              showCheckbox={true}
+                              onSelect={(list) => this.onSelect(`selected_${f.schemaName}`, list)} 
+                              onRemove={(list) => this.onRemove(`selected_${f.schemaName}`, list)}
+                              displayValue="value"
+                              style={{ 
+                                multiselectContainer: {
+                                  margin: 3
+                                },
+                                searchBox: {
+                                  minHeight: 35
+                                }
+                              }}
+                            />
+                          )
+                        case "lookup":
+                          break;
+                        default:
+                          break;
+                      }
+                    }) 
                   }
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
