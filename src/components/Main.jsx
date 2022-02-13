@@ -27,6 +27,7 @@ class Main extends React.Component {
         this.onSelect = this.onSelect.bind(this)
         this.onRemove = this.onRemove.bind(this)
         this.getOptionSetMetadata = this.getOptionSetMetadata.bind(this)
+        this.getLookUpMetadata = this.getLookUpMetadata.bind(this)
         this.state = {
           data: [],
           showData: false,
@@ -39,6 +40,10 @@ class Main extends React.Component {
               self.state[f.schemaName] = ""
               break;
             case "optionset": 
+              self.state[f.schemaName] = []
+              self.state[`selected_${f.schemaName}`] = []
+              break;
+            case "lookup":
               self.state[f.schemaName] = []
               self.state[`selected_${f.schemaName}`] = []
               break;
@@ -55,10 +60,12 @@ class Main extends React.Component {
       for (const f of fieldsConfig) {
         switch(f.type) {
           case "optionset": 
-            const results = await this.getOptionSetMetadata(f.schemaName)
+            var results = await this.getOptionSetMetadata(f.schemaName)
             this.setState({ [f.schemaName]: results })
             break;
           case "lookup": 
+            results = await this.getLookUpMetadata(f.lookupConfig)
+            this.setState({ [f.schemaName]: results })
             break;
           default:
             break;
@@ -190,24 +197,42 @@ class Main extends React.Component {
     async getOptionSetMetadata(schemaName) {
       var optionSetFetch = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
         <entity name='stringmap' >
-            <attribute name='attributevalue' />
-            <attribute name='value' />
-            <filter type='and' >
-              <condition attribute='objecttypecodename' operator='eq' value= '${EntityName}' />
-              <condition attribute='attributename' operator='eq' value= '${schemaName}' />
-            </filter>
+          <attribute name='attributevalue' />
+          <attribute name='value' />
+          <filter type='and' >
+            <condition attribute='objecttypecodename' operator='eq' value= '${EntityName}' />
+            <condition attribute='attributename' operator='eq' value= '${schemaName}' />
+          </filter>
         </entity>
       </fetch>`;
       optionSetFetch = "?fetchXml=" + encodeURIComponent(optionSetFetch);
       console.log("optionSetFetch: ", optionSetFetch)
 
       var result = await window.Xrm.WebApi.retrieveMultipleRecords("stringmap", optionSetFetch)
-      debugger
       if (result.entities.length > 0) {
         console.log(`get ${schemaName}: `, result.entities);
         return result.entities
       }
       window.alert(`Get string map ${schemaName} return no data`)
+    }
+
+    async getLookUpMetadata(config) {
+      var lookUpFetch = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+        <entity name='${config.entityName}' >
+          <attribute name='${config.primaryName}' />
+          <attribute name='${config.primaryIDName}' />
+          <filter type="and">
+            <condition attribute="statecode" value="0" operator="eq"/>
+          </filter>
+        </entity>
+      </fetch>`
+      lookUpFetch = "?fetchXml=" + encodeURIComponent(lookUpFetch);
+      var result = await window.Xrm.WebApi.retrieveMultipleRecords(config.entityName, lookUpFetch)
+      if (result.entities.length > 0) {
+        console.log(`get ${config.entityName}: `, result.entities);
+        return result.entities
+      }
+      window.alert(`Get lookup ${config.entityName} return no data`)
     }
 
     render() {
@@ -286,7 +311,27 @@ class Main extends React.Component {
                             />
                           )
                         case "lookup":
-                          break;
+                          return (
+                            <Multiselect
+                              id={f.schemaName}
+                              placeholder={f.displayName}
+                              hidePlaceholder={true}
+                              options={this.state[f.schemaName]} 
+                              selectedValues={this.state[`selected_${f.schemaName}`]}
+                              showCheckbox={true}
+                              onSelect={(list) => this.onSelect(`selected_${f.schemaName}`, list)} 
+                              onRemove={(list) => this.onRemove(`selected_${f.schemaName}`, list)}
+                              displayValue={f.lookupConfig.primaryName}
+                              style={{ 
+                                multiselectContainer: {
+                                  margin: 3
+                                },
+                                searchBox: {
+                                  minHeight: 35
+                                }
+                              }}
+                            />
+                          )
                         default:
                           break;
                       }

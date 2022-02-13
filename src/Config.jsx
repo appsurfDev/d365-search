@@ -4,10 +4,9 @@ export const fieldsConfig = [
     { displayName: "Preferred Day", schemaName: "preferredappointmentdaycode", type: "optionset", showType: "multiselect" },
     { displayName: "Job Title", schemaName: "jobtitle", type: "string", showType: "text" },
     { displayName: "Payment Terms", schemaName: "paymenttermscode", type: "optionset", showType: "multiselect"  },
-    { displayName: "Country", schemaName: "" },
     { 
-        displayName: "", schemaName: "", type: "lookup", showType: "multiselect", 
-        lookupConfig: { entityName: "", primaryName: "", primaryID: "", }
+        displayName: "Company", schemaName: "parentcustomerid", type: "lookup", showType: "multiselect", 
+        lookupConfig: { entityName: "account", primaryName: "name", primaryIDName: "accountid", }
     }
 ]
 
