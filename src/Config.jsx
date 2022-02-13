@@ -16,3 +16,4 @@ export const TableColumns = [
 ]
 
 export const EntityName = "contact"
+export const EntityPrimaryIDName = "contactid"

@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { TableColumns, fieldsConfig, EntityName } from '../Config.jsx'
+import { TableColumns, fieldsConfig, EntityName, EntityPrimaryIDName } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -90,12 +90,11 @@ class Main extends React.Component {
       var self = this
       this.setState({ loading: true, showData: false })
       
-      var select = "?$select=contactid,fullname,emailaddress1";
       // build filter query
       var isNullFilter = true
       var addedFirstFilter = false
       var addedFirstFilterField = false
-      var filter = "&$filter="
+      var filter = "?$filter="
       fieldsConfig.forEach((f) => {
         switch(f.type) {
           case "string": 
@@ -213,7 +212,14 @@ class Main extends React.Component {
         this.setState({ loading: false, showData: false })
       }
       else{
-        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, select + filter).then(
+        var expand = ""
+        fieldsConfig.forEach((f) => {
+          if(f.type === "lookup") {
+              expand += `&$expand=${f.schemaName}_${f.lookupConfig.entityName}`
+          }
+        })
+
+        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, filter + expand).then(
           function success(result) {
             if (result.entities.length === 0) {
               window.alert("There is no any data match the query.")
