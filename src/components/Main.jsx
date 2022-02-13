@@ -94,6 +94,7 @@ class Main extends React.Component {
       // build filter query
       var isNullFilter = true
       var addedFirstFilter = false
+      var addedFirstFilterField = false
       var filter = "&$filter="
       fieldsConfig.forEach((f) => {
         switch(f.type) {
@@ -102,21 +103,38 @@ class Main extends React.Component {
               isNullFilter = false
               if(this.state[f.schemaName].indexOf(',') === -1){
                 if(addedFirstFilter) {
-                  filter += `or contains(${f.schemaName}, '${this.state[f.schemaName]}')`
+                  filter += `and (contains(${f.schemaName}, '${this.state[f.schemaName]}'))`
                 }
-                else{
+                else {
                   addedFirstFilter = true
+                  addedFirstFilterField = true
                   filter += `contains(${f.schemaName}, '${this.state[f.schemaName]}')`
                 }
               }
               else {
                 var strs = this.state[f.schemaName].split(',');
-                strs.forEach((s) => {
+                strs.forEach((s, i, arr) => {
                   if(addedFirstFilter) {
-                    filter += `or contains(${f.schemaName}, '${s}')`
+                    if(i === 0) {
+                      filter += `and (contains(${f.schemaName}, '${s}')`
+                    }
+                    else {
+                      filter += `or contains(${f.schemaName}, '${s}')`
+                    }
+                    if(i === (arr.length - 1)) {
+                      if(addedFirstFilterField) {
+                        filter += ")"
+                      }
+                      else {
+                        addedFirstFilterField = true
+                      }
+                    }
                   }
-                  else{
+                  else {
                     addedFirstFilter = true
+                    if(i === (arr.length - 1)) {
+                      addedFirstFilterField = true
+                    }
                     filter += `contains(${f.schemaName}, '${s}')`
                   }
                 })
@@ -126,13 +144,60 @@ class Main extends React.Component {
           case "optionset": 
             if(this.state[`selected_${f.schemaName}`].length > 0) {
               isNullFilter = false
-              this.state[`selected_${f.schemaName}`].forEach((so) => {
+              this.state[`selected_${f.schemaName}`].forEach((so, i, arr) => {
                 if(addedFirstFilter) {
-                  filter += `or ${f.schemaName} eq ${so.attributevalue}`
+                  if(i === 0) {
+                    filter += `and (${f.schemaName} eq ${so.attributevalue}`
+                  }
+                  else {
+                    filter += `or ${f.schemaName} eq ${so.attributevalue}`
+                  }
+                  if(i === (arr.length - 1)) {
+                    if(addedFirstFilterField) {
+                      filter += ")"
+                    }
+                    else {
+                      addedFirstFilterField = true
+                    }
+                  }
                 }
                 else{
                   addedFirstFilter = true
+                  if(i === (arr.length - 1)) {
+                    addedFirstFilterField = true
+                  }
                   filter += `${f.schemaName} eq ${so.attributevalue}`
+                }
+              })
+            }
+            break;
+          case "lookup":
+            if(this.state[`selected_${f.schemaName}`].length > 0) {
+              isNullFilter = false
+              this.state[`selected_${f.schemaName}`].forEach((so, i ,arr) => {
+                if(addedFirstFilter) {
+                  if(i === 0) {
+                    filter += `and (_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
+                  }
+                  else {
+                    filter += `or _${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
+                  }
+                  if(i === (arr.length - 1)) {
+                    if(addedFirstFilterField) {
+                      filter += ")"
+                    }
+                    else {
+                      addedFirstFilterField = true
+                    }
+                  }
+                  
+                }
+                else{
+                  addedFirstFilter = true
+                  if(i === (arr.length - 1)) {
+                    addedFirstFilterField = true
+                  }
+                  filter += `_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
                 }
               })
             }
