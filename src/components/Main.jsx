@@ -302,10 +302,14 @@ class Main extends React.Component {
                               displayValue="value"
                               style={{ 
                                 multiselectContainer: {
-                                  margin: 3
+                                  marginTop: 4,
+                                  marginBottom: 4,
+                                  marginLeft: 4,
+                                  marginRight: 4
                                 },
                                 searchBox: {
-                                  minHeight: 35
+                                  minHeight: 35,
+                                  padding: 8.5
                                 }
                               }}
                             />
@@ -324,10 +328,14 @@ class Main extends React.Component {
                               displayValue={f.lookupConfig.primaryName}
                               style={{ 
                                 multiselectContainer: {
-                                  margin: 3
+                                  marginTop: 4,
+                                  marginBottom: 4,
+                                  marginLeft: 4,
+                                  marginRight: 4
                                 },
                                 searchBox: {
-                                  minHeight: 35
+                                  minHeight: 35,
+                                  padding: 8.5
                                 }
                               }}
                             />
