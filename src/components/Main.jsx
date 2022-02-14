@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { TableColumns, fieldsConfig, EntityName, EntityPrimaryIDName } from '../Config.jsx'
+import { TableColumns, fieldsConfig, EntityName } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -230,13 +230,28 @@ class Main extends React.Component {
               })
             }
             else {
+              var entities = result.entities
+              entities.forEach((e) => {
+                console.log("e: ", e)
+                fieldsConfig.forEach((f) => {
+                  switch(f.type) {
+                    case "optionset":
+                      break
+                    case "lookup": 
+                      e[f.schemaName] = e[`${f.schemaName}_${f.lookupConfig.entityName}`][f.lookupConfig.primaryName] 
+                      break
+                    default:
+                      break
+                  }
+                })
+              })
               self.setState({ 
-                data: result.entities,
+                data: entities,
                 loading: false, 
                 showData: true 
               })
             }
-  
+            console.log("entities: ", entities)
           },
           function (error) {
               console.log(error.message);
@@ -434,7 +449,7 @@ class Main extends React.Component {
             <Grid item xs={12}>
               <MaterialTable
                 onRowClick={this.onRowClick}
-                columns={TableColumns}
+                columns={fieldsConfig}
                 data={data}
                 options={{
                   exportFileName: "D365_Search_Result",
