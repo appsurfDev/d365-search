@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { TableColumns, fieldsConfig, EntityName } from '../Config.jsx'
+import { fieldsConfig, EntityName, tableConfig } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -450,14 +450,7 @@ class Main extends React.Component {
                 onRowClick={this.onRowClick}
                 columns={fieldsConfig}
                 data={data}
-                options={{
-                  exportFileName: "D365_Search_Result",
-                  exportButton: true, 
-                  headerStyle: {
-                    backgroundColor: '#01579b',
-                    color: '#FFF'
-                  }
-                }}
+                options={tableConfig}
                 title=""
               />
             </Grid>
