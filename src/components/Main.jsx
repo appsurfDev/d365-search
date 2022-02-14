@@ -232,10 +232,10 @@ class Main extends React.Component {
             else {
               var entities = result.entities
               entities.forEach((e) => {
-                console.log("e: ", e)
                 fieldsConfig.forEach((f) => {
                   switch(f.type) {
                     case "optionset":
+                      e[f.schemaName] = e[`${f.schemaName}@OData.Community.Display.V1.FormattedValue`]
                       break
                     case "lookup": 
                       e[f.schemaName] = e[`${f.schemaName}_${f.lookupConfig.entityName}`][f.lookupConfig.primaryName] 
@@ -251,7 +251,6 @@ class Main extends React.Component {
                 showData: true 
               })
             }
-            console.log("entities: ", entities)
           },
           function (error) {
               console.log(error.message);
