@@ -215,7 +215,7 @@ class Main extends React.Component {
         var expand = ""
         fieldsConfig.forEach((f) => {
           if(f.type === "lookup") {
-              expand += `&$expand=${f.schemaName}_${f.lookupConfig.entityName}`
+              expand += `&$expand=${f.lookupConfig.expandName}`
           }
         })
 
@@ -238,7 +238,7 @@ class Main extends React.Component {
                       e[f.schemaName] = e[`${f.schemaName}@OData.Community.Display.V1.FormattedValue`]
                       break
                     case "lookup": 
-                      e[f.schemaName] = e[`${f.schemaName}_${f.lookupConfig.entityName}`][f.lookupConfig.primaryName] 
+                      e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
                       break
                     default:
                       break
@@ -302,6 +302,7 @@ class Main extends React.Component {
     }
 
     async getLookUpMetadata(config) {
+      console.log("getLookUpMetadata: ", config)
       var lookUpFetch = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
         <entity name='${config.entityName}' >
           <attribute name='${config.primaryName}' />
@@ -312,6 +313,7 @@ class Main extends React.Component {
         </entity>
       </fetch>`
       lookUpFetch = "?fetchXml=" + encodeURIComponent(lookUpFetch);
+      console.log("lookUpFetch: ", lookUpFetch)
       var result = await window.Xrm.WebApi.retrieveMultipleRecords(config.entityName, lookUpFetch)
       if (result.entities.length > 0) {
         console.log(`get ${config.entityName}: `, result.entities);
