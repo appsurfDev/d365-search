@@ -121,12 +121,8 @@ class Main extends React.Component {
                       filter += `or contains(${f.schemaName}, '${s}')`
                     }
                     if(i === (arr.length - 1)) {
-                      if(addedFirstFilterField) {
-                        filter += ")"
-                      }
-                      else {
-                        addedFirstFilterField = true
-                      }
+                      filter += ")"
+                      addedFirstFilterField = true
                     }
                   }
                   else {
@@ -134,7 +130,7 @@ class Main extends React.Component {
                     if(i === (arr.length - 1)) {
                       addedFirstFilterField = true
                     }
-                    filter += `contains(${f.schemaName}, '${s}')`
+                    filter += `(contains(${f.schemaName}, '${s}')`
                   }
                 })
               }
@@ -152,12 +148,8 @@ class Main extends React.Component {
                     filter += `or ${f.schemaName} eq ${so.attributevalue}`
                   }
                   if(i === (arr.length - 1)) {
-                    if(addedFirstFilterField) {
-                      filter += ")"
-                    }
-                    else {
-                      addedFirstFilterField = true
-                    }
+                    filter += ")"
+                    addedFirstFilterField = true
                   }
                 }
                 else{
@@ -165,7 +157,7 @@ class Main extends React.Component {
                   if(i === (arr.length - 1)) {
                     addedFirstFilterField = true
                   }
-                  filter += `${f.schemaName} eq ${so.attributevalue}`
+                  filter += `(${f.schemaName} eq ${so.attributevalue}`
                 }
               })
             }
@@ -182,12 +174,8 @@ class Main extends React.Component {
                     filter += `or _${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
                   }
                   if(i === (arr.length - 1)) {
-                    if(addedFirstFilterField) {
-                      filter += ")"
-                    }
-                    else {
-                      addedFirstFilterField = true
-                    }
+                    filter += ")"
+                    addedFirstFilterField = true
                   }
                   
                 }
@@ -196,7 +184,7 @@ class Main extends React.Component {
                   if(i === (arr.length - 1)) {
                     addedFirstFilterField = true
                   }
-                  filter += `_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
+                  filter += `(_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
                 }
               })
             }

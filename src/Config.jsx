@@ -39,7 +39,7 @@ export const fieldsConfig = [
 export const tableConfig = {
     pageSize: 50,
     pageSizeOptions: [25, 50, 100, 200],
-    exportFileName: "D365_Search_Result",
+    exportFileName: "Alumni_Search_Result",
     exportButton: true, 
     headerStyle: {
       backgroundColor: '#01579b',
