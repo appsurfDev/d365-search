@@ -212,10 +212,17 @@ class Main extends React.Component {
         this.setState({ loading: false, showData: false })
       }
       else{
-        var expand = ""
+        var expand = "&$expand="
+        var addedFirstExpand = false
         fieldsConfig.forEach((f) => {
           if(f.type === "lookup") {
-              expand += `&$expand=${f.lookupConfig.expandName}`
+            if(addedFirstExpand) {
+              expand += `,${f.lookupConfig.expandName}`
+            }
+            else {
+              expand += `${f.lookupConfig.expandName}`
+              addedFirstExpand = true
+            }
           }
         })
 
@@ -238,7 +245,9 @@ class Main extends React.Component {
                       e[f.schemaName] = e[`${f.schemaName}@OData.Community.Display.V1.FormattedValue`]
                       break
                     case "lookup": 
-                      e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
+                      if(e[`${f.lookupConfig.expandName}`] !== null) {
+                        e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
+                      }
                       break
                     default:
                       break
