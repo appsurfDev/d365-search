@@ -20,7 +20,6 @@ const theme = createTheme();
 class Main extends React.Component {
     constructor(props) {
         super(props)
-        this.componentDidMount = this.componentDidMount.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
         this.dsiplaySearch = this.dsiplaySearch.bind(this)
         this.onTextChange = this.onTextChange.bind(this)
@@ -75,6 +74,10 @@ class Main extends React.Component {
       this.setState({ loading: false })
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+      return this.props.value === nextProps.value;
+    }
+
     // custom function
     onRowClick(event, rowData) {
       console.log("Main onRowClick")
@@ -82,13 +85,13 @@ class Main extends React.Component {
     }
 
     dsiplaySearch() {
-      this.setState({ loading: false, showData: false })
+      window.location.reload();
     }
 
     onSubmit() {
       console.log("Main onSubmit")
+      this.setState({ loading: true, showData: false, data: [] })
       var self = this
-      this.setState({ loading: true, showData: false })
       
       // build filter query
       var isNullFilter = true
@@ -127,10 +130,11 @@ class Main extends React.Component {
                   }
                   else {
                     addedFirstFilter = true
+                    filter += `(contains(${f.schemaName}, '${s}')`
                     if(i === (arr.length - 1)) {
                       addedFirstFilterField = true
+                      filter += ")"
                     }
-                    filter += `(contains(${f.schemaName}, '${s}')`
                   }
                 })
               }
@@ -154,10 +158,11 @@ class Main extends React.Component {
                 }
                 else{
                   addedFirstFilter = true
+                  filter += `(${f.schemaName} eq ${so.attributevalue}`
                   if(i === (arr.length - 1)) {
                     addedFirstFilterField = true
+                    filter += ")"
                   }
-                  filter += `(${f.schemaName} eq ${so.attributevalue}`
                 }
               })
             }
@@ -181,10 +186,11 @@ class Main extends React.Component {
                 }
                 else{
                   addedFirstFilter = true
+                  filter += `(_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
                   if(i === (arr.length - 1)) {
                     addedFirstFilterField = true
+                    filter += ")"
                   }
-                  filter += `(_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
                 }
               })
             }
@@ -216,22 +222,20 @@ class Main extends React.Component {
 
         window.Xrm.WebApi.retrieveMultipleRecords(EntityName, filter + expand).then(
           function success(result) {
+            console.log("result: ", result)
             if (result.entities.length === 0) {
               window.alert("There is no any data match the query.")
               self.setState({ 
-                data: [],
                 loading: false, 
-                showData: false 
+                showData: false,
               })
             }
             else {
               var entities = result.entities
+              console.log("structuring odata")
               entities.forEach((e) => {
                 fieldsConfig.forEach((f) => {
                   switch(f.type) {
-                    case "optionset":
-                      e[f.schemaName] = e[`${f.schemaName}@OData.Community.Display.V1.FormattedValue`]
-                      break
                     case "lookup": 
                       if(e[`${f.lookupConfig.expandName}`] !== null) {
                         e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
@@ -242,12 +246,14 @@ class Main extends React.Component {
                   }
                 })
               })
+              console.log("structure odata completed")
               self.setState({ 
                 data: entities,
                 loading: false, 
                 showData: true 
               })
             }
+            console.log("onSubmit Completed");
           },
           function (error) {
               console.log(error.message);
@@ -320,7 +326,7 @@ class Main extends React.Component {
     }
 
     render() {
-      const { data, showData, loading } = this.state
+      const { showData, loading, data } = this.state
       return (
         <ThemeProvider theme={theme}>
           <Container component="main" maxWidth="xs">
@@ -356,6 +362,7 @@ class Main extends React.Component {
                   style={{ margin: 3 }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
                   {
+                    // eslint-disable-next-line array-callback-return
                     fieldsConfig.map((f) => {
                       switch(f.type) {
                         case "string":
