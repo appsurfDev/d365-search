@@ -8,7 +8,7 @@ export const fieldsConfig = [
             primaryIDName: "ks_optiontitleenglishid", 
         }
     },
-    { title: "Chinese Name", field: "k_chinesename", displayName: "Chinese Name", schemaName: "ks_chinesename", type: "string", showType: "text" },
+    { title: "Chinese Name", field: "ks_chinesename", displayName: "Chinese Name", schemaName: "ks_chinesename", type: "string", showType: "text" },
     { 
         title: "Gender", field: "ks_genderoptionsenglish", displayName: "Gender", schemaName: "ks_genderoptionsenglish", type: "lookup", showType: "multiselect", 
         lookupConfig: { 

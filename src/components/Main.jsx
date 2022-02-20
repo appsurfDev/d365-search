@@ -97,7 +97,8 @@ class Main extends React.Component {
       var isNullFilter = true
       var addedFirstFilter = false
       var addedFirstFilterField = false
-      var filter = "?$filter="
+      var select = "?$select=ks_chinesename,ks_preferredname,mobilephone,ks_companyname,ks_linkedinurl,ks_currentprovince,ks_currentcity"
+      var filter = "&$filter="
       fieldsConfig.forEach((f) => {
         switch(f.type) {
           case "string": 
@@ -211,16 +212,16 @@ class Main extends React.Component {
         fieldsConfig.forEach((f) => {
           if(f.type === "lookup") {
             if(addedFirstExpand) {
-              expand += `,${f.lookupConfig.expandName}`
+              expand += `,${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
             }
             else {
-              expand += `${f.lookupConfig.expandName}`
+              expand += `${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
               addedFirstExpand = true
             }
           }
         })
 
-        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, filter + expand).then(
+        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, select + filter + expand).then(
           function success(result) {
             console.log("result: ", result)
             if (result.entities.length === 0) {
