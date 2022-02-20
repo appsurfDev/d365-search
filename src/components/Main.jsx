@@ -211,66 +211,68 @@ class Main extends React.Component {
         }
       });
 
+      var expand = "&$expand="
+      var addedFirstExpand = false
+      fieldsConfig.forEach((f) => {
+        if(f.type === "lookup") {
+          if(addedFirstExpand) {
+            expand += `,${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
+          }
+          else {
+            expand += `${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
+            addedFirstExpand = true
+          }
+        }
+      })
+      
+      var query = "";
       if(isNullFilter) {
-        window.alert("You need to input at least one field")
-        this.setState({ loading: false, showData: false })
+        query = select + expand
       }
-      else{
-        var expand = "&$expand="
-        var addedFirstExpand = false
-        fieldsConfig.forEach((f) => {
-          if(f.type === "lookup") {
-            if(addedFirstExpand) {
-              expand += `,${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
-            }
-            else {
-              expand += `${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
-              addedFirstExpand = true
-            }
-          }
-        })
+      else {
+        query = select + filter + expand
+      }
 
-        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, select + filter + expand).then(
-          function success(result) {
-            if (result.entities.length === 0) {
-              window.alert("There is no any data match the query.")
-              self.setState({ 
-                loading: false, 
-                showData: false,
-              })
-            }
-            else {
-              var entities = result.entities
-              entities.forEach((e) => {
-                fieldsConfig.forEach((f) => {
-                  switch(f.type) {
-                    case "lookup": 
-                      if(e[`${f.lookupConfig.expandName}`] !== null) {
-                        e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
-                      }
-                      break
-                    default:
-                      break
-                  }
-                })
-              })
-              self.setState({ 
-                data: entities,
-                loading: false, 
-                showData: true 
-              })
-            }
-          },
-          function (error) {
-              window.alert("Error: " + error.message)
-              self.setState({ 
-                data: [],
-                loading: false, 
-                showData: false
-              })
+      window.Xrm.WebApi.retrieveMultipleRecords(EntityName, query).then(
+        function success(result) {
+          if (result.entities.length === 0) {
+            window.alert("There is no any data match the query.")
+            self.setState({ 
+              loading: false, 
+              showData: false,
+            })
           }
-        );
-      }
+          else {
+            var entities = result.entities
+            entities.forEach((e) => {
+              fieldsConfig.forEach((f) => {
+                switch(f.type) {
+                  case "lookup": 
+                    if(e[`${f.lookupConfig.expandName}`] !== null) {
+                      e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
+                    }
+                    break
+                  default:
+                    break
+                }
+              })
+            })
+            self.setState({ 
+              data: entities,
+              loading: false, 
+              showData: true 
+            })
+          }
+        },
+        function (error) {
+            window.alert("Error: " + error.message)
+            self.setState({ 
+              data: [],
+              loading: false, 
+              showData: false
+            })
+        }
+      );
     }
 
     onTextChange(e) {
