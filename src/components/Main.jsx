@@ -14,6 +14,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
 import { fieldsConfig, EntityName, tableConfig } from '../Config.jsx'
+import { StarRateTwoTone } from '@mui/icons-material';
 
 const theme = createTheme();
 
@@ -53,24 +54,31 @@ class Main extends React.Component {
     }
 
     async componentDidMount() {
-      console.log("Main componentDidMount")
-      this.setState({ loading: true })
+      this.setState({ loading: true })  
 
-      for (const f of fieldsConfig) {
-        switch(f.type) {
-          case "optionset": 
-            var results = await this.getOptionSetMetadata(f.schemaName)
-            this.setState({ [f.schemaName]: results })
-            break;
-          case "lookup": 
-            results = await this.getLookUpMetadata(f.lookupConfig)
-            this.setState({ [f.schemaName]: results })
-            break;
-          default:
-            break;
+      var state = sessionStorage.getItem("state")
+
+      if(state !== null && state !== undefined) {
+        state = JSON.parse(state)
+        this.setState({...state})
+      }
+      else {
+        for (const f of fieldsConfig) {
+          switch(f.type) {
+            case "optionset": 
+              var results = await this.getOptionSetMetadata(f.schemaName)
+              this.setState({ [f.schemaName]: results })
+              break;
+            case "lookup": 
+              results = await this.getLookUpMetadata(f.lookupConfig)
+              this.setState({ [f.schemaName]: results })
+              break;
+            default:
+              break;
+          }
         }
       }
-
+      
       this.setState({ loading: false })
     }
 
@@ -80,16 +88,19 @@ class Main extends React.Component {
 
     // custom function
     onRowClick(event, rowData) {
-      console.log("Main onRowClick")
       window.Xrm.Utility.openEntityForm("contact", rowData.contactid, null, {openInNewWindow: true})
     }
 
     dsiplaySearch() {
-      window.location.reload();
+      var state = this.state
+      state["showData"] = false
+      state["data"] = []
+      sessionStorage.setItem("state", JSON.stringify(state))
+      var url = new URL(window.location.href);
+      window.location.href = url.href;
     }
 
     onSubmit() {
-      console.log("Main onSubmit")
       this.setState({ loading: true, showData: false, data: [] })
       var self = this
       
@@ -201,7 +212,6 @@ class Main extends React.Component {
         }
       });
 
-      console.log("filter: ", filter)
       if(isNullFilter) {
         window.alert("You need to input at least one field")
         this.setState({ loading: false, showData: false })
@@ -223,7 +233,6 @@ class Main extends React.Component {
 
         window.Xrm.WebApi.retrieveMultipleRecords(EntityName, select + filter + expand).then(
           function success(result) {
-            console.log("result: ", result)
             if (result.entities.length === 0) {
               window.alert("There is no any data match the query.")
               self.setState({ 
@@ -233,7 +242,6 @@ class Main extends React.Component {
             }
             else {
               var entities = result.entities
-              console.log("structuring odata")
               entities.forEach((e) => {
                 fieldsConfig.forEach((f) => {
                   switch(f.type) {
@@ -247,17 +255,14 @@ class Main extends React.Component {
                   }
                 })
               })
-              console.log("structure odata completed")
               self.setState({ 
                 data: entities,
                 loading: false, 
                 showData: true 
               })
             }
-            console.log("onSubmit Completed");
           },
           function (error) {
-              console.log(error.message);
               window.alert("Error: " + error.message)
               self.setState({ 
                 data: [],
@@ -295,18 +300,15 @@ class Main extends React.Component {
         </entity>
       </fetch>`;
       optionSetFetch = "?fetchXml=" + encodeURIComponent(optionSetFetch);
-      console.log("optionSetFetch: ", optionSetFetch)
 
       var result = await window.Xrm.WebApi.retrieveMultipleRecords("stringmap", optionSetFetch)
       if (result.entities.length > 0) {
-        console.log(`get ${schemaName}: `, result.entities);
         return result.entities
       }
       window.alert(`Get string map ${schemaName} return no data`)
     }
 
     async getLookUpMetadata(config) {
-      console.log("getLookUpMetadata: ", config)
       var lookUpFetch = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
         <entity name='${config.entityName}' >
           <attribute name='${config.primaryName}' />
@@ -317,10 +319,8 @@ class Main extends React.Component {
         </entity>
       </fetch>`
       lookUpFetch = "?fetchXml=" + encodeURIComponent(lookUpFetch);
-      console.log("lookUpFetch: ", lookUpFetch)
       var result = await window.Xrm.WebApi.retrieveMultipleRecords(config.entityName, lookUpFetch)
       if (result.entities.length > 0) {
-        console.log(`get ${config.entityName}: `, result.entities);
         return result.entities
       }
       window.alert(`Get lookup ${config.entityName} return no data`)
