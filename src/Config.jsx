@@ -36,15 +36,4 @@ export const fieldsConfig = [
     { title: "Current City", field: "ks_currentcity", displayName: "Current City", schemaName: "ks_currentcity", type: "string", showType: "text" },
 ]
 
-export const tableConfig = {
-    pageSize: 50,
-    pageSizeOptions: [25, 50, 100, 200],
-    exportFileName: "Alumni_Search_Result",
-    exportButton: true, 
-    headerStyle: {
-      backgroundColor: '#01579b',
-      color: '#FFF'
-    }
-}
-
 export const EntityName = "contact"

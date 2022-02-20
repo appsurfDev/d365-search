@@ -13,8 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { fieldsConfig, EntityName, tableConfig } from '../Config.jsx'
-import { StarRateTwoTone } from '@mui/icons-material';
+import { fieldsConfig, EntityName } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -457,7 +456,16 @@ class Main extends React.Component {
                 onRowClick={this.onRowClick}
                 columns={fieldsConfig}
                 data={data}
-                options={tableConfig}
+                options={{
+                  pageSize: data.length >= 25 ? 25 : data.length,
+                  pageSizeOptions: [data.length >= 25 ? 25 : data.length, 50, 100, 200],
+                  exportFileName: "Alumni_Search_Result",
+                  exportButton: true, 
+                  headerStyle: {
+                    backgroundColor: '#01579b',
+                    color: '#FFF'
+                  }
+                }}
                 title=""
               />
             </Grid>
