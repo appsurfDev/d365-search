@@ -1,39 +1,235 @@
 export const fieldsConfig = [
     { 
-        title: "Title", field: "ks_titleoptionsenglish", displayName: "Title", schemaName: "ks_titleoptionsenglish", type: "lookup", showType: "multiselect", 
+        title: "Year of Graduation", 
+        field: "ks_optionyearlist", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
         lookupConfig: { 
-            entityName: "ks_optiontitleenglish", 
-            expandName: "ks_TitleOptionsEnglish",
+            entityName: "ks_optionyearlist", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optiontitleenglishid", 
+            primaryIDName: "ks_optionyearlistid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
         }
     },
-    { title: "Chinese Name", field: "ks_chinesename", displayName: "Chinese Name", schemaName: "ks_chinesename", type: "string", showType: "text" },
     { 
-        title: "Gender", field: "ks_genderoptionsenglish", displayName: "Gender", schemaName: "ks_genderoptionsenglish", type: "lookup", showType: "multiselect", 
+        title: "Faculty/ School", 
+        field: "ks_facultyschooloptionsenglish", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
         lookupConfig: { 
-            entityName: "ks_optiongenderenglish", 
-            expandName: "ks_GenderOptionsEnglish",
+            entityName: "ks_facultyschooloptionsenglish", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optiongenderenglishid", 
+            primaryIDName: "ks_facultyschooloptionsenglishid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
         }
     },
-    { title: "Preferred Name", field: "ks_preferredname", displayName: "Preferred Name", schemaName: "ks_preferredname", type: "string", showType: "text" },
-    { title: "Mobile Phone", field: "mobilephone", displayName: "Mobile Phone", schemaName: "mobilephone", type: "string", showType: "text" },
-    { title: "Company Name", field: "ks_companyname", displayName: "Company Name", schemaName: "ks_companyname", type: "string", showType: "text" },
-    { title: "Title/Position", field: "ks_titleposition", displayName: "Title/Position", schemaName: "ks_titleposition", type: "string", showType: "text" },
-    { title: "LinkedIn URL", field: "ks_linkedinurl", displayName: "LinkedIn URL", schemaName: "ks_linkedinurl", type: "string", showType: "text" },
     { 
-        title: "Current Country", field: "ks_currentcountry", displayName: "Current Country", schemaName: "ks_currentcountry", type: "lookup", showType: "multiselect", 
+        title: "Department", 
+        field: "ks_optiondepartment", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optiondepartmentenglish", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optiondepartmentenglishid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
+        }
+    },
+    { 
+        title: "Degree", 
+        field: "ks_degree", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optionalumnidegreeselection", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optionalumnidegreeselectionid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
+        }
+    },
+    { 
+        title: "Program title", 
+        field: "ks_programtitlelookup", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optionprogrammetitle", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optionprogrammetitleid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
+        }
+    },
+    { 
+        title: "Sur Name", 
+        field: "lastname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Given Name", 
+        field: "firstname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Chinese Name", 
+        field: "ks_chinesename", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Preferred Name", 
+        field: "ks_preferredname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Mobile Phone", 
+        field: "mobilephone", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    {
+        title: "Email", 
+        field: "emailaddress1", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Current Country", 
+        field: "ks_currentcountry", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
         lookupConfig: { 
             entityName: "ks_optioncountryenglish", 
-            expandName: "ks_CurrentCountry",
             primaryName: "ks_name", 
             primaryIDName: "ks_optioncountryenglishid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
         }
     },
-    { title: "Current Province", field: "ks_currentprovince", displayName: "Current Province", schemaName: "ks_currentprovince", type: "string", showType: "text" },
-    { title: "Current City", field: "ks_currentcity", displayName: "Current City", schemaName: "ks_currentcity", type: "string", showType: "text" },
+    {
+        title: "Company Name", 
+        field: "ks_companyname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Title", 
+        field: "ks_titleoptionsenglish", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optiontitleenglish", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optiontitleenglishid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    }
 ]
 
 export const EntityName = "contact"

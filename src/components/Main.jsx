@@ -36,15 +36,15 @@ class Main extends React.Component {
         fieldsConfig.forEach((f) => {
           switch(f.type) {
             case "string": 
-              self.state[f.schemaName] = ""
+              self.state[f.field] = ""
               break;
             case "optionset": 
-              self.state[f.schemaName] = []
-              self.state[`selected_${f.schemaName}`] = []
+              self.state[f.field] = []
+              self.state[`selected_${f.field}`] = []
               break;
             case "lookup":
-              self.state[f.schemaName] = []
-              self.state[`selected_${f.schemaName}`] = []
+              self.state[f.field] = []
+              self.state[`selected_${f.field}`] = []
               break;
             default: 
               break;
@@ -65,12 +65,12 @@ class Main extends React.Component {
         for (const f of fieldsConfig) {
           switch(f.type) {
             case "optionset": 
-              var results = await this.getOptionSetMetadata(f.schemaName)
-              this.setState({ [f.schemaName]: results })
+              var results = await this.getOptionSetMetadata(f.field)
+              this.setState({ [f.field]: results })
               break;
             case "lookup": 
               results = await this.getLookUpMetadata(f.lookupConfig)
-              this.setState({ [f.schemaName]: results })
+              this.setState({ [f.field]: results })
               break;
             default:
               break;
@@ -87,7 +87,7 @@ class Main extends React.Component {
 
     // custom function
     onRowClick(event, rowData) {
-      window.Xrm.Utility.openEntityForm("contact", rowData.contactid, null, {openInNewWindow: true})
+      window.Xrm.Utility.openEntityForm(EntityName, rowData.contactid, null, {openInNewWindow: true})
     }
 
     dsiplaySearch() {
@@ -102,139 +102,118 @@ class Main extends React.Component {
     onSubmit() {
       this.setState({ loading: true, showData: false, data: [] })
       var self = this
-      
-      // build filter query
-      var isNullFilter = true
-      var addedFirstFilter = false
-      var addedFirstFilterField = false
-      var select = "?$select=ks_chinesename,ks_preferredname,mobilephone,ks_companyname,ks_linkedinurl,ks_currentprovince,ks_currentcity"
-      var filter = "&$filter="
+
+      var attributeXml = ""
+      var filterXml = ""
+      var linkEntityXml = ""
+      var addedLinkEntityList = []
+
       fieldsConfig.forEach((f) => {
-        switch(f.type) {
-          case "string": 
-            if(this.state[f.schemaName]) {
-              isNullFilter = false
-              if(this.state[f.schemaName].indexOf(',') === -1){
-                if(addedFirstFilter) {
-                  filter += `and (contains(${f.schemaName}, '${this.state[f.schemaName]}'))`
+        if(f.linkEntityConfig.isLinkEntity) {
+          if(!addedLinkEntityList.includes(f.linkEntityConfig.linkEntityName)) {
+            var linkEntityAttributeXml = ""
+            var linkEntityFilterXml = ""
+
+            fieldsConfig
+              .filter((of) => {
+                return of.linkEntityConfig.linkEntityName === f.linkEntityConfig.linkEntityName
+              })
+              .forEach((of) => {
+                linkEntityAttributeXml += `<attribute name='${of.field}'/>`
+                switch(of.type) {
+                  case "string":
+                    if(this.state[of.field]) {
+                      if(this.state[of.field].indexOf(',') === -1) {
+                        linkEntityFilterXml += `<condition value='%${this.state[of.field]}%' operator="like" attribute='${of.field}'/>`
+                      }
+                      else {
+                        var strs = this.state[of.field].split(',');
+                        strs.forEach((s) => {
+                          linkEntityFilterXml += `<condition value='%${s}%' operator="like" attribute='${of.field}'/>`
+                        })
+                      }
+                    }
+                    break;
+                  case "lookup":
+                    if(this.state[`selected_${of.field}`].length > 0) {
+                      linkEntityFilterXml += `<condition attribute='${of.field}' operator="in">`
+                      this.state[`selected_${of.field}`].forEach((so) => {
+                        linkEntityFilterXml += `<value>{${so[of.lookupConfig.primaryIDName]}}</value>`
+                      })
+                      linkEntityFilterXml += `</condition>`
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              })
+
+            addedLinkEntityList.push(f.linkEntityConfig.linkEntityName)
+            var entityFetchXml = `<link-entity name='${f.linkEntityConfig.linkEntityName}' alias='${f.linkEntityConfig.alias}' link-type="outer" to='${f.linkEntityConfig.to}' from='${f.linkEntityConfig.from}'>
+                ${linkEntityAttributeXml}
+                <filter type="and">
+                  ${linkEntityFilterXml}
+                </filter>
+              </link-entity>
+            `
+            linkEntityXml += entityFetchXml
+          }
+        }
+        else {
+          attributeXml += `<attribute name='${f.field}'/>`
+          switch(f.type) {
+            case "string": 
+              if(this.state[f.field]) {
+                if(this.state[f.field].indexOf(',') === -1) {
+                  filterXml += `<condition value='%${this.state[f.field]}%' operator="like" attribute='${f.field}'/>`
                 }
                 else {
-                  addedFirstFilter = true
-                  addedFirstFilterField = true
-                  filter += `contains(${f.schemaName}, '${this.state[f.schemaName]}')`
+                  var strs = this.state[f.field].split(',');
+                  var addedFirstFilter = false
+                  strs.forEach((s, i, arr) => {
+                    if(!addedFirstFilter) {
+                      filterXml += `<filter type="or">`
+                      addedFirstFilter = true
+                    }
+                    filterXml += `<condition value='%${s}%' operator="like" attribute='${f.field}'/>`
+                    if(i === arr.length - 1) {
+                      filterXml += `</filter>`
+                    }
+                  })
                 }
               }
-              else {
-                var strs = this.state[f.schemaName].split(',');
-                strs.forEach((s, i, arr) => {
-                  if(addedFirstFilter) {
-                    if(i === 0) {
-                      filter += `and (contains(${f.schemaName}, '${s}')`
-                    }
-                    else {
-                      filter += `or contains(${f.schemaName}, '${s}')`
-                    }
-                    if(i === (arr.length - 1)) {
-                      filter += ")"
-                      addedFirstFilterField = true
-                    }
-                  }
-                  else {
-                    addedFirstFilter = true
-                    filter += `(contains(${f.schemaName}, '${s}')`
-                    if(i === (arr.length - 1)) {
-                      addedFirstFilterField = true
-                      filter += ")"
-                    }
-                  }
+              break;
+            case "lookup":
+              if(this.state[`selected_${f.field}`].length > 0) {
+                filterXml += `<condition attribute='${f.field}' operator="in">`
+                this.state[`selected_${f.field}`].forEach((so) => {
+                  filterXml += `<value>{${so[f.lookupConfig.primaryIDName]}}</value>`
                 })
+                filterXml += `</condition>`
               }
-            }
-            break;
-          case "optionset": 
-            if(this.state[`selected_${f.schemaName}`].length > 0) {
-              isNullFilter = false
-              this.state[`selected_${f.schemaName}`].forEach((so, i, arr) => {
-                if(addedFirstFilter) {
-                  if(i === 0) {
-                    filter += `and (${f.schemaName} eq ${so.attributevalue}`
-                  }
-                  else {
-                    filter += `or ${f.schemaName} eq ${so.attributevalue}`
-                  }
-                  if(i === (arr.length - 1)) {
-                    filter += ")"
-                    addedFirstFilterField = true
-                  }
-                }
-                else{
-                  addedFirstFilter = true
-                  filter += `(${f.schemaName} eq ${so.attributevalue}`
-                  if(i === (arr.length - 1)) {
-                    addedFirstFilterField = true
-                    filter += ")"
-                  }
-                }
-              })
-            }
-            break;
-          case "lookup":
-            if(this.state[`selected_${f.schemaName}`].length > 0) {
-              isNullFilter = false
-              this.state[`selected_${f.schemaName}`].forEach((so, i ,arr) => {
-                if(addedFirstFilter) {
-                  if(i === 0) {
-                    filter += `and (_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
-                  }
-                  else {
-                    filter += `or _${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
-                  }
-                  if(i === (arr.length - 1)) {
-                    filter += ")"
-                    addedFirstFilterField = true
-                  }
-                  
-                }
-                else{
-                  addedFirstFilter = true
-                  filter += `(_${f.schemaName}_value eq '${so[f.lookupConfig.primaryIDName]}'`
-                  if(i === (arr.length - 1)) {
-                    addedFirstFilterField = true
-                    filter += ")"
-                  }
-                }
-              })
-            }
-            break;
-          default:
-            break;
-        }
-      });
-
-      var expand = "&$expand="
-      var addedFirstExpand = false
-      fieldsConfig.forEach((f) => {
-        if(f.type === "lookup") {
-          if(addedFirstExpand) {
-            expand += `,${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
-          }
-          else {
-            expand += `${f.lookupConfig.expandName}($select=${f.lookupConfig.primaryName})`
-            addedFirstExpand = true
+              break;
+            default:
+              break;
           }
         }
       })
-      
-      var query = "";
-      if(isNullFilter) {
-        query = select + expand
-      }
-      else {
-        query = select + filter + expand
-      }
+
+      var fetchXml = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+        <entity name='${EntityName}' >
+          ${attributeXml}
+          <filter type='and' >
+            ${filterXml}
+          </filter>
+          ${linkEntityXml}
+        </entity>
+      </fetch>`;
+
+      console.log("fetchXml: ", fetchXml)
+      var query = "?fetchXml=" + encodeURIComponent(fetchXml)
 
       window.Xrm.WebApi.retrieveMultipleRecords(EntityName, query).then(
         function success(result) {
+          console.log("result: ", result)
           if (result.entities.length === 0) {
             window.alert("There is no any data match the query.")
             self.setState({ 
@@ -244,16 +223,36 @@ class Main extends React.Component {
           }
           else {
             var entities = result.entities
+            console.log("entities: ", entities)
             entities.forEach((e) => {
               fieldsConfig.forEach((f) => {
-                switch(f.type) {
-                  case "lookup": 
-                    if(e[`${f.lookupConfig.expandName}`] !== null) {
-                      e[f.schemaName] = e[`${f.lookupConfig.expandName}`][f.lookupConfig.primaryName] 
-                    }
-                    break
-                  default:
-                    break
+                if(f.linkEntityConfig.isLinkEntity) {
+                  switch (f.type) {
+                    case "string":
+                      if(e[`${f.linkEntityConfig.alias}.${f.field}`]) {
+                        e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}`]
+                      }
+                      break;
+                    case "lookup":
+                      if(e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]) {
+                        e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]
+                      }
+                      else {
+                        e[f.field] = null
+                      }
+                      break;
+                    default:
+                      break;
+                  }
+                }
+                else {
+                    switch (f.type) {
+                      case "lookup":
+                        e[f.field] = e[`_${f.field}_value@OData.Community.Display.V1.FormattedValue`]
+                        break;
+                      default:
+                        break;
+                  }
                 }
               })
             })
@@ -289,14 +288,14 @@ class Main extends React.Component {
       this.setState({ [optionName]: selectedList })
     }
 
-    async getOptionSetMetadata(schemaName) {
+    async getOptionSetMetadata(field) {
       var optionSetFetch = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
         <entity name='stringmap' >
           <attribute name='attributevalue' />
           <attribute name='value' />
           <filter type='and' >
             <condition attribute='objecttypecodename' operator='eq' value= '${EntityName}' />
-            <condition attribute='attributename' operator='eq' value= '${schemaName}' />
+            <condition attribute='attributename' operator='eq' value= '${field}' />
           </filter>
         </entity>
       </fetch>`;
@@ -306,7 +305,7 @@ class Main extends React.Component {
       if (result.entities.length > 0) {
         return result.entities
       }
-      window.alert(`Get string map ${schemaName} return no data`)
+      window.alert(`Get string map ${field} return no data`)
     }
 
     async getLookUpMetadata(config) {
@@ -372,10 +371,10 @@ class Main extends React.Component {
                             <TextField
                               margin="dense"
                               fullWidth
-                              id={f.schemaName}
-                              label={f.displayName}
-                              name={f.schemaName}
-                              value={this.state[f.schemaName]}
+                              id={f.field}
+                              label={f.title}
+                              name={f.field}
+                              value={this.state[f.field]}
                               size="small"
                               onChange={this.onTextChange}
                               style={{ margin: 3 }}
@@ -384,14 +383,14 @@ class Main extends React.Component {
                         case "optionset":
                           return (
                             <Multiselect
-                              id={f.schemaName}
-                              placeholder={f.displayName}
+                              id={f.field}
+                              placeholder={f.title}
                               hidePlaceholder={true}
-                              options={this.state[f.schemaName]} 
-                              selectedValues={this.state[`selected_${f.schemaName}`]}
+                              options={this.state[f.field]} 
+                              selectedValues={this.state[`selected_${f.field}`]}
                               showCheckbox={true}
-                              onSelect={(list) => this.onSelect(`selected_${f.schemaName}`, list)} 
-                              onRemove={(list) => this.onRemove(`selected_${f.schemaName}`, list)}
+                              onSelect={(list) => this.onSelect(`selected_${f.field}`, list)} 
+                              onRemove={(list) => this.onRemove(`selected_${f.field}`, list)}
                               displayValue="value"
                               style={{ 
                                 multiselectContainer: {
@@ -410,14 +409,14 @@ class Main extends React.Component {
                         case "lookup":
                           return (
                             <Multiselect
-                              id={f.schemaName}
-                              placeholder={f.displayName}
+                              id={f.field}
+                              placeholder={f.title}
                               hidePlaceholder={true}
-                              options={this.state[f.schemaName]} 
-                              selectedValues={this.state[`selected_${f.schemaName}`]}
+                              options={this.state[f.field]} 
+                              selectedValues={this.state[`selected_${f.field}`]}
                               showCheckbox={true}
-                              onSelect={(list) => this.onSelect(`selected_${f.schemaName}`, list)} 
-                              onRemove={(list) => this.onRemove(`selected_${f.schemaName}`, list)}
+                              onSelect={(list) => this.onSelect(`selected_${f.field}`, list)} 
+                              onRemove={(list) => this.onRemove(`selected_${f.field}`, list)}
                               displayValue={f.lookupConfig.primaryName}
                               style={{ 
                                 multiselectContainer: {
@@ -463,6 +462,7 @@ class Main extends React.Component {
                   pageSizeOptions: [data.length >= 25 ? 25 : data.length, 50, 100, 200],
                   exportFileName: "Alumni_Search_Result",
                   exportButton: true, 
+                  exportAllData: true,
                   headerStyle: {
                     backgroundColor: '#01579b',
                     color: '#FFF'
