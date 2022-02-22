@@ -124,23 +124,23 @@ class Main extends React.Component {
                   case "string":
                     if(this.state[of.field]) {
                       if(this.state[of.field].indexOf(',') === -1) {
-                        linkEntityFilterXml += `<condition value='%${this.state[of.field]}%' operator="like" attribute='${of.field}'/>`
+                        filterXml += `<condition entityname='${of.linkEntityConfig.alias}' value='%${this.state[of.field]}%' operator="like" attribute='${of.field}'/>`
                       }
                       else {
                         var strs = this.state[of.field].split(',');
                         strs.forEach((s) => {
-                          linkEntityFilterXml += `<condition value='%${s}%' operator="like" attribute='${of.field}'/>`
+                          filterXml += `<condition entityname='${of.linkEntityConfig.alias}' value='%${s}%' operator="like" attribute='${of.field}'/>`
                         })
                       }
                     }
                     break;
                   case "lookup":
                     if(this.state[`selected_${of.field}`].length > 0) {
-                      linkEntityFilterXml += `<condition attribute='${of.field}' operator="in">`
+                      filterXml += `<condition entityname='${of.linkEntityConfig.alias}' attribute='${of.field}' operator="in">`
                       this.state[`selected_${of.field}`].forEach((so) => {
-                        linkEntityFilterXml += `<value>{${so[of.lookupConfig.primaryIDName]}}</value>`
+                        filterXml += `<value>{${so[of.lookupConfig.primaryIDName]}}</value>`
                       })
-                      linkEntityFilterXml += `</condition>`
+                      filterXml += `</condition>`
                     }
                     break;
                   default:
@@ -151,9 +151,6 @@ class Main extends React.Component {
             addedLinkEntityList.push(f.linkEntityConfig.linkEntityName)
             var entityFetchXml = `<link-entity name='${f.linkEntityConfig.linkEntityName}' alias='${f.linkEntityConfig.alias}' link-type="outer" to='${f.linkEntityConfig.to}' from='${f.linkEntityConfig.from}'>
                 ${linkEntityAttributeXml}
-                <filter type="and">
-                  ${linkEntityFilterXml}
-                </filter>
               </link-entity>
             `
             linkEntityXml += entityFetchXml
