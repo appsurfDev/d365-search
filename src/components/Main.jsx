@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ReactiveButton from 'reactive-button'
 import Multiselect from 'multiselect-react-dropdown';
-import { fieldsConfig, EntityName } from '../Config.jsx'
+import { fieldsConfig, EntityName, EntityPrimaryIDName } from '../Config.jsx'
 
 const theme = createTheme();
 
@@ -87,7 +87,7 @@ class Main extends React.Component {
 
     // custom function
     onRowClick(event, rowData) {
-      window.Xrm.Utility.openEntityForm(EntityName, rowData.contactid, null, {openInNewWindow: true})
+      window.Xrm.Utility.openEntityForm(EntityName, rowData[EntityPrimaryIDName], null, {openInNewWindow: true})
     }
 
     dsiplaySearch() {

@@ -233,3 +233,4 @@ export const fieldsConfig = [
 ]
 
 export const EntityName = "contact"
+export const EntityPrimaryIDName = "contactid"
