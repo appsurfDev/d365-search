@@ -112,7 +112,6 @@ class Main extends React.Component {
         if(f.linkEntityConfig.isLinkEntity) {
           if(!addedLinkEntityList.includes(f.linkEntityConfig.linkEntityName)) {
             var linkEntityAttributeXml = ""
-            var linkEntityFilterXml = ""
 
             fieldsConfig
               .filter((of) => {
