@@ -359,12 +359,12 @@ class Main extends React.Component {
                   <SearchIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                  Alumni Search
+                  { showData ? "Alumni Search Result page" : "Alumni Search"}
                 </Typography>
               </Box>
               { showData ?  <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
-                  idleText="Display Search"
+                  idleText="Alumni Search"
                   onClick={this.dsiplaySearch}
                   style={{ margin: 3 }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
