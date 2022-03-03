@@ -334,13 +334,15 @@ class Main extends React.Component {
       const { showData, loading, data } = this.state
       return (
         <ThemeProvider theme={theme}>
-          <Container component="main" maxWidth="xs">
+          <Container component="main" maxWidth="xs" style={{
+            marginLeft: showData ? 0 : 'auto',
+          }}>
             <CssBaseline />
             <Box
               sx={{
                 marginTop: 0,
                 marginBottom: 1,
-                display: 'flex',
+                display: showData ? 'block' : 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
               }}
