@@ -4,9 +4,9 @@ function openSearchPage() {
 
 function changeSearchBtnColor() {
     setTimeout(() => {
-        var element = parent.document.getElementById("contact|NoRelationship|HomePageGrid|ks.contact.Command.OpenSearch10-button")
+        var element = parent.document.querySelector('[data-id="contact|NoRelationship|HomePageGrid|ks.contact.Button.OpenSearch"]');
         element.style.background='#FFFE33';
-    }, 1000);
+    }, 500);
 
     return true
 }
