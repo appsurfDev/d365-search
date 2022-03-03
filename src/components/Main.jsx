@@ -21,6 +21,7 @@ class Main extends React.Component {
     constructor(props) {
         super(props)
         this.onSubmit = this.onSubmit.bind(this)
+        this.onClear = this.onClear.bind(this)
         this.dsiplaySearch = this.dsiplaySearch.bind(this)
         this.onTextChange = this.onTextChange.bind(this)
         this.onSelect = this.onSelect.bind(this)
@@ -270,6 +271,12 @@ class Main extends React.Component {
       );
     }
 
+    onClear() {
+      sessionStorage.removeItem("state");
+      var url = new URL(window.location.href);
+      window.location.href = url.href;
+    }
+
     onTextChange(e) {
       this.setState({
         [e.target.id]: e.target.value
@@ -350,7 +357,7 @@ class Main extends React.Component {
                   <SearchIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                  Search Page
+                  Alumni Search
                 </Typography>
               </Box>
               { showData ?  <ReactiveButton
@@ -375,6 +382,7 @@ class Main extends React.Component {
                               size="small"
                               onChange={this.onTextChange}
                               style={{ margin: 3 }}
+                              InputLabelProps={{ style: { fontSize: 13 } }}
                             />
                           )
                         case "optionset":
@@ -437,9 +445,23 @@ class Main extends React.Component {
                   }
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
-                  idleText="Submit"
+                  idleText="Search"
+                  color='Primary'
                   onClick={this.onSubmit}
-                  style={{ margin: 3 }}
+                  style={{ 
+                    borderRadius: '10px',
+                    margin: 10 
+                  }}
+                />
+                <ReactiveButton
+                  buttonState={ loading ? 'loading' : 'idle' }
+                  idleText="Clear"
+                  color='Red'
+                  onClick={this.onClear}
+                  style={{ 
+                    borderRadius: '10px',
+                    margin: 10 
+                  }}
                 />
               </Box>}
             </Box>

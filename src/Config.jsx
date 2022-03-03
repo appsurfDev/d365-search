@@ -1,6 +1,137 @@
 export const fieldsConfig = [
     { 
-        title: "Year of Graduation", 
+        title: "Title", 
+        field: "ks_titleoptionsenglish", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optiontitleenglish", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optiontitleenglishid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Chinese Name", 
+        field: "ks_chinesename", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Surname", 
+        field: "lastname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Given Name", 
+        field: "firstname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Preferred Name", 
+        field: "ks_preferredname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    {
+        title: "Email", 
+        field: "emailaddress1", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Mobile", 
+        field: "mobilephone", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    {
+        title: "Company", 
+        field: "ks_companyname", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    {
+        title: "Job Title", 
+        field: "ks_titleposition", 
+        type: "string", 
+        showType: "text",
+        hide: false,
+        linkEntityConfig: {
+            isLinkEntity: false,
+            to: "",
+            from: "",
+            alias: "",
+            linkEntityName: ""
+        }
+    },
+    { 
+        title: "Latest Year of Graduation", 
         field: "ks_optionyearlist", 
         type: "lookup", 
         showType: "multiselect", 
@@ -19,7 +150,26 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Faculty/ School", 
+        title: "Degree", 
+        field: "ks_degree", 
+        type: "lookup", 
+        showType: "multiselect", 
+        hide: false,
+        lookupConfig: { 
+            entityName: "ks_optionalumnidegreeselection", 
+            primaryName: "ks_name", 
+            primaryIDName: "ks_optionalumnidegreeselectionid", 
+        },
+        linkEntityConfig: {
+            isLinkEntity: true,
+            to: "contactid",
+            from: "ks_academicrecordslookupid",
+            alias: "ac",
+            linkEntityName: "ks_academicrecord"
+        }
+    },
+    { 
+        title: "Faculty / School", 
         field: "ks_facultyschooloptionsenglish", 
         type: "lookup", 
         showType: "multiselect", 
@@ -57,26 +207,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Degree", 
-        field: "ks_degree", 
-        type: "lookup", 
-        showType: "multiselect", 
-        hide: false,
-        lookupConfig: { 
-            entityName: "ks_optionalumnidegreeselection", 
-            primaryName: "ks_name", 
-            primaryIDName: "ks_optionalumnidegreeselectionid", 
-        },
-        linkEntityConfig: {
-            isLinkEntity: true,
-            to: "contactid",
-            from: "ks_academicrecordslookupid",
-            alias: "ac",
-            linkEntityName: "ks_academicrecord"
-        }
-    },
-    { 
-        title: "Program title", 
+        title: "Program Title", 
         field: "ks_programtitlelookup", 
         type: "lookup", 
         showType: "multiselect", 
@@ -95,91 +226,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Sur Name", 
-        field: "lastname", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Given Name", 
-        field: "firstname", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Chinese Name", 
-        field: "ks_chinesename", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Preferred Name", 
-        field: "ks_preferredname", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Mobile Phone", 
-        field: "mobilephone", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    {
-        title: "Email", 
-        field: "emailaddress1", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Current Country", 
+        title: "Current Country / Region", 
         field: "ks_currentcountry", 
         type: "lookup", 
         showType: "multiselect", 
@@ -188,39 +235,6 @@ export const fieldsConfig = [
             entityName: "ks_optioncountryenglish", 
             primaryName: "ks_name", 
             primaryIDName: "ks_optioncountryenglishid", 
-        },
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    {
-        title: "Company Name", 
-        field: "ks_companyname", 
-        type: "string", 
-        showType: "text",
-        hide: false,
-        linkEntityConfig: {
-            isLinkEntity: false,
-            to: "",
-            from: "",
-            alias: "",
-            linkEntityName: ""
-        }
-    },
-    { 
-        title: "Title", 
-        field: "ks_titleoptionsenglish", 
-        type: "lookup", 
-        showType: "multiselect", 
-        hide: false,
-        lookupConfig: { 
-            entityName: "ks_optiontitleenglish", 
-            primaryName: "ks_name", 
-            primaryIDName: "ks_optiontitleenglishid", 
         },
         linkEntityConfig: {
             isLinkEntity: false,
