@@ -488,7 +488,9 @@ class Main extends React.Component {
                   headerStyle: {
                     backgroundColor: '#01579b',
                     color: '#FFF'
-                  }
+                  },
+                  tableLayout: "auto",
+                  draggable: true
                 }}
                 title=""
               />
