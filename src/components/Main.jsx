@@ -412,6 +412,7 @@ class Main extends React.Component {
                               options={this.state[f.field]} 
                               selectedValues={this.state[`selected_${f.field}`]}
                               showCheckbox={true}
+                              showArrow={true}
                               onSelect={(list) => this.onSelect(`selected_${f.field}`, list)} 
                               onRemove={(list) => this.onRemove(`selected_${f.field}`, list)}
                               displayValue={f.lookupConfig.primaryName}
