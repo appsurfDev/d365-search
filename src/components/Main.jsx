@@ -74,7 +74,6 @@ class Main extends React.Component {
               break;
             case "lookup": 
               results = await this.getLookUpMetadata(f.lookupConfig)
-              console.table({results})
               if(f.field === "ks_optionyearlist") {
                 results = results.filter((r) => {
                   var year = r[f.lookupConfig.primaryName]
@@ -84,8 +83,12 @@ class Main extends React.Component {
                       return true
                     }
                   }
-
                   return false
+                })
+              }
+              else if(f.field === "ks_currentcountry") {
+                results = results.sort((x, y) => {
+                  return x[f.lookupConfig.primaryName] === "HONG KONG SAR" ? -1 : y[f.lookupConfig.primaryName] === "HONG KONG SAR" ? 1 :0
                 })
               }
               this.setState({ [f.field]: results })
