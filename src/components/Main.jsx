@@ -465,7 +465,7 @@ class Main extends React.Component {
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Search"
-                  color='Primary'
+                  color='Red'
                   onClick={this.onSubmit}
                   style={{ 
                     borderRadius: '10px',
@@ -475,7 +475,7 @@ class Main extends React.Component {
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Clear"
-                  color='Red'
+                  color='Primary'
                   onClick={this.onClear}
                   style={{ 
                     borderRadius: '10px',

@@ -207,7 +207,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Program Title", 
+        title: "Programme Title", 
         field: "ks_programtitlelookup", 
         type: "lookup", 
         showType: "multiselect", 
