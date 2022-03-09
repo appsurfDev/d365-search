@@ -372,16 +372,34 @@ class Main extends React.Component {
                   alignItems: 'center',
                 }}
               >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                { showData ? <span/> : <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                   <SearchIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                  { showData ? "Alumni Search Result page" : "Alumni Search"}
+                </Avatar> }
+                <Typography 
+                  component="h1" 
+                  variant="h5" 
+                  style={{
+                    fontSize: showData ? 32 : 40
+                  }}
+                >
+                  { showData ? "Alumni Search Result Page" : "Alumni Search"}
                 </Typography>
               </Box>
               { showData ?  <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
-                  idleText="Alumni Search"
+                  color="Red"
+                  idleText={
+                    <Box
+                    sx={{
+                      marginTop: 0,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <SearchIcon />
+                      Alumni Search
+                    </Box>
+                  }
                   onClick={this.dsiplaySearch}
                   style={{ margin: 3 }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -469,7 +487,6 @@ class Main extends React.Component {
                   onClick={this.onSubmit}
                   style={{ 
                     borderRadius: '10px',
-                    margin: 10 
                   }}
                 />
                 <ReactiveButton
