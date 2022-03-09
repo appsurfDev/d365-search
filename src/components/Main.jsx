@@ -17,6 +17,9 @@ import { fieldsConfig, EntityName, EntityPrimaryIDName } from '../Config.jsx'
 
 const theme = createTheme();
 
+const yearOfGraduationStart = 1939;
+const yearOfGraduationEnd  = 2022
+
 class Main extends React.Component {
     constructor(props) {
         super(props)
@@ -71,6 +74,20 @@ class Main extends React.Component {
               break;
             case "lookup": 
               results = await this.getLookUpMetadata(f.lookupConfig)
+              console.table({results})
+              if(f.field === "ks_optionyearlist") {
+                results = results.filter((r) => {
+                  var year = r[f.lookupConfig.primaryName]
+                  if(year) {
+                    var yearNum = parseInt(year)
+                    if(yearNum >= yearOfGraduationStart && yearNum <= yearOfGraduationEnd) {
+                      return true
+                    }
+                  }
+
+                  return false
+                })
+              }
               this.setState({ [f.field]: results })
               break;
             default:

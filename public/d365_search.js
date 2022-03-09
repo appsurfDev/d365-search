@@ -5,7 +5,7 @@ function openSearchPage() {
 function changeSearchBtnColor() {
     setTimeout(() => {
         var element = parent.document.querySelector('[data-id="contact|NoRelationship|HomePageGrid|ks.contact.Button.OpenSearch"]');
-        element.style.background='#FFFE33';
+        element.style.background='#FC3503';
     }, 500);
 
     return true
