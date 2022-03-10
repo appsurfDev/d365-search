@@ -208,21 +208,23 @@ export const fieldsConfig = [
     },
     { 
         title: "Programme Title", 
-        field: "ks_programtitlelookup", 
-        type: "lookup", 
-        showType: "multiselect", 
+        field: "ks_name", 
+        type: "string", 
+        showType: "text", 
         hide: false,
-        lookupConfig: { 
-            entityName: "ks_optionprogrammetitle", 
-            primaryName: "ks_name", 
-            primaryIDName: "ks_optionprogrammetitleid", 
-        },
         linkEntityConfig: {
             isLinkEntity: true,
             to: "contactid",
             from: "ks_academicrecordslookupid",
             alias: "ac",
-            linkEntityName: "ks_academicrecord"
+            linkEntityName: "ks_academicrecord",
+            isSubLinkEntity: true,
+            subLinkEntityConfig: {
+                to: "ks_programtitlelookup",
+                from: "ks_optionprogrammetitleid",
+                alias: "acp",
+                linkEntityName: "ks_optionprogrammetitle",
+            }
         }
     },
     { 

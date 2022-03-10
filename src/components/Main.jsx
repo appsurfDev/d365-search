@@ -133,23 +133,30 @@ class Main extends React.Component {
         if(f.linkEntityConfig.isLinkEntity) {
           if(!addedLinkEntityList.includes(f.linkEntityConfig.linkEntityName)) {
             var linkEntityAttributeXml = ""
+            var subLinkEntityAttributeXml = ""
 
             fieldsConfig
               .filter((of) => {
                 return of.linkEntityConfig.linkEntityName === f.linkEntityConfig.linkEntityName
               })
               .forEach((of) => {
-                linkEntityAttributeXml += `<attribute name='${of.field}'/>`
+                if(of.linkEntityConfig.isSubLinkEntity) {
+                  subLinkEntityAttributeXml += `<attribute name='${of.field}'/>`
+                }
+                else {
+                  linkEntityAttributeXml += `<attribute name='${of.field}'/>`
+                }
                 switch(of.type) {
                   case "string":
                     if(this.state[of.field]) {
+                      var etnName = of.linkEntityConfig.isSubLinkEntity ? of.linkEntityConfig.subLinkEntityConfig.alias :of.linkEntityConfig.alias
                       if(this.state[of.field].indexOf(',') === -1) {
-                        filterXml += `<condition entityname='${of.linkEntityConfig.alias}' value='%${this.state[of.field]}%' operator="like" attribute='${of.field}'/>`
+                        filterXml += `<condition entityname='${etnName}' value='%${this.state[of.field]}%' operator="like" attribute='${of.field}'/>`
                       }
                       else {
                         var strs = this.state[of.field].split(',');
                         strs.forEach((s) => {
-                          filterXml += `<condition entityname='${of.linkEntityConfig.alias}' value='%${s}%' operator="like" attribute='${of.field}'/>`
+                          filterXml += `<condition entityname='${etnName}' value='%${s}%' operator="like" attribute='${of.field}'/>`
                         })
                       }
                     }
@@ -170,6 +177,9 @@ class Main extends React.Component {
 
             addedLinkEntityList.push(f.linkEntityConfig.linkEntityName)
             var entityFetchXml = `<link-entity name='${f.linkEntityConfig.linkEntityName}' alias='${f.linkEntityConfig.alias}' link-type="outer" to='${f.linkEntityConfig.to}' from='${f.linkEntityConfig.from}'>
+                <link-entity name='ks_optionprogrammetitle' alias='acp' link-type="outer" to='ks_programtitlelookup' from='ks_optionprogrammetitleid'>
+                ${subLinkEntityAttributeXml}
+                </link-entity>
                 ${linkEntityAttributeXml}
               </link-entity>
             `
@@ -246,8 +256,15 @@ class Main extends React.Component {
                 if(f.linkEntityConfig.isLinkEntity) {
                   switch (f.type) {
                     case "string":
-                      if(e[`${f.linkEntityConfig.alias}.${f.field}`]) {
-                        e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}`]
+                      if(f.linkEntityConfig.isSubLinkEntity) {
+                        if(e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]) {
+                          e[f.field] = e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]
+                        }
+                      }
+                      else {
+                        if(e[`${f.linkEntityConfig.alias}.${f.field}`]) {
+                          e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}`]
+                        }
                       }
                       break;
                     case "lookup":
