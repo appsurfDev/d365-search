@@ -407,7 +407,6 @@ class Main extends React.Component {
               </Box>
               { showData ?  <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
-                  color="Red"
                   idleText={
                     <Box
                     sx={{
@@ -421,7 +420,7 @@ class Main extends React.Component {
                     </Box>
                   }
                   onClick={this.dsiplaySearch}
-                  style={{ margin: 3 }}
+                  style={{ margin: 3, backgroundColor: '#A02337' }}
                 /> : <Box component="form" noValidate sx={{ mt: 1 }}>
                   {
                     // eslint-disable-next-line array-callback-return
@@ -503,10 +502,10 @@ class Main extends React.Component {
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Search"
-                  color='Red'
                   onClick={this.onSubmit}
                   style={{ 
                     borderRadius: '10px',
+                    backgroundColor: '#A02337'
                   }}
                 />
                 <ReactiveButton
