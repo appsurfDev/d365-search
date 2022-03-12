@@ -511,7 +511,7 @@ class Main extends React.Component {
                 <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText="Clear"
-                  color='Primary'
+                  color='secondary'
                   onClick={this.onClear}
                   style={{ 
                     borderRadius: '10px',
