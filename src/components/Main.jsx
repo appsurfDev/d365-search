@@ -546,7 +546,9 @@ class Main extends React.Component {
                   draggable: true
                 }}
                 localization={{
-                  
+                  toolbar: {
+                    searchPlaceholder: 'Refine Search'
+                  }
                 }}
                 title=""
               />
