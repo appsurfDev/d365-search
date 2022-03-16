@@ -545,6 +545,9 @@ class Main extends React.Component {
                   tableLayout: "auto",
                   draggable: true
                 }}
+                localization={{
+                  
+                }}
                 title=""
               />
             </Grid>
