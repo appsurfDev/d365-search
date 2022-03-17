@@ -356,7 +356,7 @@ class Main extends React.Component {
           <filter type="and">
             <condition attribute="statecode" value="0" operator="eq"/>
           </filter>
-          <order attribute='${config.primaryName}' descending='false' />
+          <order attribute='${config.primaryName}' descending='${config.sortDesc}' />
         </entity>
       </fetch>`
       lookUpFetch = "?fetchXml=" + encodeURIComponent(lookUpFetch);

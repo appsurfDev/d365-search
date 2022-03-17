@@ -8,7 +8,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_optiontitleenglish", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optiontitleenglishid", 
+            primaryIDName: "ks_optiontitleenglishid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: false,
@@ -139,7 +140,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_optionyearlist", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optionyearlistid", 
+            primaryIDName: "ks_optionyearlistid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: true,
@@ -158,7 +160,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_optionalumnidegreeselection", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optionalumnidegreeselectionid", 
+            primaryIDName: "ks_optionalumnidegreeselectionid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: true,
@@ -177,7 +180,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_facultyschooloptionsenglish", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_facultyschooloptionsenglishid", 
+            primaryIDName: "ks_facultyschooloptionsenglishid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: true,
@@ -196,7 +200,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_optiondepartmentenglish", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optiondepartmentenglishid", 
+            primaryIDName: "ks_optiondepartmentenglishid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: true,
@@ -236,7 +241,8 @@ export const fieldsConfig = [
         lookupConfig: { 
             entityName: "ks_optioncountryenglish", 
             primaryName: "ks_name", 
-            primaryIDName: "ks_optioncountryenglishid", 
+            primaryIDName: "ks_optioncountryenglishid",
+            sortDesc: false
         },
         linkEntityConfig: {
             isLinkEntity: false,
