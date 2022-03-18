@@ -91,6 +91,11 @@ class Main extends React.Component {
                   return x[f.lookupConfig.primaryName] === "HONG KONG SAR" ? -1 : y[f.lookupConfig.primaryName] === "HONG KONG SAR" ? 1 :0
                 })
               }
+              else if(f.field === "ks_degree") {
+                results = results.sort((x, y) => {
+                  return x[f.lookupConfig.primaryName] !== "Others" ? -1 : y[f.lookupConfig.primaryName] !== "Others" ? 1 :0
+                })
+              }
               this.setState({ [f.field]: results })
               break;
             default:
