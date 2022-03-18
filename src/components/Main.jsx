@@ -399,7 +399,7 @@ class Main extends React.Component {
                   component="h1" 
                   variant="h5" 
                   style={{
-                    fontSize: showData ? 32 : 40
+                    fontSize: 25
                   }}
                 >
                   { showData ? "Alumni Search Result Page" : "Alumni Search"}
@@ -437,8 +437,13 @@ class Main extends React.Component {
                               value={this.state[f.field]}
                               size="small"
                               onChange={this.onTextChange}
-                              style={{ margin: 3 }}
-                              InputLabelProps={{ style: { fontSize: 13 } }}
+                              style={{ 
+                                marginTop: 0,
+                                marginBottom: 9.5, 
+                                marginLeft: 4,
+                                marginRight: 4 
+                              }}
+                              InputLabelProps={{ style: { fontSize: 15 } }}
                             />
                           )
                         case "optionset":
@@ -455,14 +460,15 @@ class Main extends React.Component {
                               displayValue="value"
                               style={{ 
                                 multiselectContainer: {
-                                  marginTop: 4,
-                                  marginBottom: 4,
+                                  marginTop: 0,
+                                  marginBottom: 9.5,
                                   marginLeft: 4,
-                                  marginRight: 4
+                                  marginRight: 4,
                                 },
                                 searchBox: {
                                   minHeight: 35,
-                                  padding: 8.5
+                                  padding: 8.5,
+                                  marginBottom: 10
                                 }
                               }}
                             />
@@ -482,14 +488,15 @@ class Main extends React.Component {
                               displayValue={f.lookupConfig.primaryName}
                               style={{ 
                                 multiselectContainer: {
-                                  marginTop: 4,
+                                  marginTop: 0,
                                   marginBottom: 4,
                                   marginLeft: 4,
-                                  marginRight: 4
+                                  marginRight: 4,
                                 },
                                 searchBox: {
                                   minHeight: 35,
-                                  padding: 8.5
+                                  padding: 8.5,
+                                  marginBottom: 8.5
                                 }
                               }}
                             />
