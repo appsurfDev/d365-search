@@ -1,5 +1,5 @@
 import React from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableToolbar } from 'material-table';
 import {
   Avatar,
   CssBaseline,
@@ -389,7 +389,7 @@ class Main extends React.Component {
                 alignItems: 'center',
               }}
             >
-              <Box
+              { showData ? <div /> : <Box
                 sx={{
                   marginTop: 0,
                   display: 'flex',
@@ -397,9 +397,9 @@ class Main extends React.Component {
                   alignItems: 'center',
                 }}
               >
-                { showData ? <span/> : <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                   <SearchIcon />
-                </Avatar> }
+                </Avatar>
                 <Typography 
                   component="h1" 
                   variant="h5" 
@@ -407,26 +407,10 @@ class Main extends React.Component {
                     fontSize: 25
                   }}
                 >
-                  { showData ? "Alumni Search Result Page" : "Alumni Search"}
+                  Alumni Search
                 </Typography>
-              </Box>
-              { showData ?  <ReactiveButton
-                  buttonState={ loading ? 'loading' : 'idle' }
-                  idleText={
-                    <Box
-                    sx={{
-                      marginTop: 0,
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                      <SearchIcon />
-                      Alumni Search
-                    </Box>
-                  }
-                  onClick={this.dsiplaySearch}
-                  style={{ margin: 3, backgroundColor: '#A02337' }}
-                /> : <Box component="form" noValidate sx={{ mt: 1 }}>
+              </Box> }
+              { showData ?  <div /> : <Box component="form" noValidate sx={{ mt: 1 }}>
                   {
                     // eslint-disable-next-line array-callback-return
                     fieldsConfig.map((f) => {
@@ -563,6 +547,49 @@ class Main extends React.Component {
                   }
                 }}
                 title=""
+                components={{
+                  Toolbar: props => (
+                    <div>
+                      <Box
+                        sx={{
+                          marginTop: 0,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Typography 
+                          component="h1" 
+                          variant="h5" 
+                          style={{
+                            fontSize: 20,
+                            marginRight: 5
+                          }}
+                        >
+                          Alumni Search Result Page
+                        </Typography>
+                        <ReactiveButton
+                          buttonState={ loading ? 'loading' : 'idle' }
+                          idleText={
+                            <Box
+                            sx={{
+                              marginTop: 0,
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
+                              <SearchIcon />
+                              Alumni Search
+                            </Box>
+                          }
+                          onClick={this.dsiplaySearch}
+                          style={{ margin: 3, backgroundColor: '#A02337' }}
+                        />
+                      </Box>
+                      <MTableToolbar {...props} />
+                    </div>
+                  )
+                }}
               />
             </Grid>
           </Grid>}

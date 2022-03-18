@@ -141,7 +141,7 @@ export const fieldsConfig = [
             entityName: "ks_optionyearlist", 
             primaryName: "ks_name", 
             primaryIDName: "ks_optionyearlistid",
-            sortDesc: false
+            sortDesc: true
         },
         linkEntityConfig: {
             isLinkEntity: true,
@@ -178,7 +178,7 @@ export const fieldsConfig = [
         showType: "multiselect", 
         hide: false,
         lookupConfig: { 
-            entityName: "ks_facultyschooloptionsenglish", 
+            entityName: "ks_facultyschooloptionsenglish",
             primaryName: "ks_name", 
             primaryIDName: "ks_facultyschooloptionsenglishid",
             sortDesc: false
