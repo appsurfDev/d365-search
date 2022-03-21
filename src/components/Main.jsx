@@ -524,6 +524,42 @@ class Main extends React.Component {
             alignItems="center" 
           >
             <Grid item xs={12}>
+              <Box
+                sx={{
+                  marginTop: 0,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography 
+                  component="h1" 
+                  variant="h5" 
+                  style={{
+                    fontSize: 20,
+                    marginRight: 5
+                  }}
+                >
+                  Alumni Search Result Page
+                </Typography>
+              </Box>
+              <ReactiveButton
+                  buttonState={ loading ? 'loading' : 'idle' }
+                  idleText={
+                    <Box
+                    sx={{
+                      marginTop: 0,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <SearchIcon />
+                      Alumni Search
+                    </Box>
+                  }
+                  onClick={this.dsiplaySearch}
+                  style={{ margin: 3, backgroundColor: '#A02337' }}
+                />
               <MaterialTable
                 onRowClick={this.onRowClick}
                 columns={fieldsConfig}
@@ -532,14 +568,17 @@ class Main extends React.Component {
                   pageSize: data.length >= 25 ? 25 : data.length,
                   pageSizeOptions: [data.length >= 25 ? 25 : data.length, 50, 100, 200],
                   exportFileName: "Alumni_Search_Result",
-                  exportButton: true, 
                   exportAllData: true,
                   headerStyle: {
                     backgroundColor: '#01579b',
                     color: '#FFF'
                   },
                   tableLayout: "auto",
-                  draggable: true
+                  draggable: true,
+                  exportButton: {
+                    csv: true,
+                    pdf: false
+                  }
                 }}
                 localization={{
                   toolbar: {
@@ -547,49 +586,6 @@ class Main extends React.Component {
                   }
                 }}
                 title=""
-                components={{
-                  Toolbar: props => (
-                    <div>
-                      <Box
-                        sx={{
-                          marginTop: 0,
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography 
-                          component="h1" 
-                          variant="h5" 
-                          style={{
-                            fontSize: 20,
-                            marginRight: 5
-                          }}
-                        >
-                          Alumni Search Result Page
-                        </Typography>
-                        <ReactiveButton
-                          buttonState={ loading ? 'loading' : 'idle' }
-                          idleText={
-                            <Box
-                            sx={{
-                              marginTop: 0,
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                            }}>
-                              <SearchIcon />
-                              Alumni Search
-                            </Box>
-                          }
-                          onClick={this.dsiplaySearch}
-                          style={{ margin: 3, backgroundColor: '#A02337' }}
-                        />
-                      </Box>
-                      <MTableToolbar {...props} />
-                    </div>
-                  )
-                }}
               />
             </Grid>
           </Grid>}
