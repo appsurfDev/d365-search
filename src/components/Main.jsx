@@ -524,25 +524,6 @@ class Main extends React.Component {
             alignItems="center" 
           >
             <Grid item xs={12}>
-              <Box
-                sx={{
-                  marginTop: 0,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography 
-                  component="h1" 
-                  variant="h5" 
-                  style={{
-                    fontSize: 20,
-                    marginRight: 5
-                  }}
-                >
-                  Alumni Search Result Page
-                </Typography>
-              </Box>
               <ReactiveButton
                   buttonState={ loading ? 'loading' : 'idle' }
                   idleText={
@@ -553,12 +534,11 @@ class Main extends React.Component {
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
-                      <SearchIcon />
-                      Alumni Search
+                      Back to Alumni Search
                     </Box>
                   }
                   onClick={this.dsiplaySearch}
-                  style={{ margin: 3, backgroundColor: '#A02337' }}
+                  style={{ margin: 3, backgroundColor: '#A02337',  borderRadius: '10px', }}
                 />
               <MaterialTable
                 onRowClick={this.onRowClick}
@@ -583,9 +563,16 @@ class Main extends React.Component {
                 localization={{
                   toolbar: {
                     searchPlaceholder: 'Refine Search'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'records',
+                    labelRowsPerPage: 'records par page:',
                   }
                 }}
-                title=""
+                title="Result Page"
+                style={{
+                  marginTop: 10
+                }}
               />
             </Grid>
           </Grid>}
