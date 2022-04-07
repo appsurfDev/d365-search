@@ -569,7 +569,7 @@ class Main extends React.Component {
                     labelRowsPerPage: 'records par page:',
                   }
                 }}
-                title="Result Page"
+                title="Search Result"
                 style={{
                   marginTop: 10
                 }}

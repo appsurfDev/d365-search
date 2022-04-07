@@ -132,7 +132,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Latest Year of Graduation", 
+        title: "Year of Graduation", 
         field: "ks_optionyearlist", 
         type: "lookup", 
         showType: "multiselect", 
@@ -161,7 +161,7 @@ export const fieldsConfig = [
             entityName: "ks_optionalumnidegreeselection", 
             primaryName: "ks_name", 
             primaryIDName: "ks_optionalumnidegreeselectionid",
-            sortDesc: false
+            sortDesc: true
         },
         linkEntityConfig: {
             isLinkEntity: true,
