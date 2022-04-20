@@ -172,7 +172,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Faculty / School", 
+        title: "Faculty/ School", 
         field: "ks_facultyschooloptionsenglish", 
         type: "lookup", 
         showType: "multiselect", 
@@ -233,7 +233,7 @@ export const fieldsConfig = [
         }
     },
     { 
-        title: "Current Country / Region", 
+        title: "Curr Country/ Region", 
         field: "ks_currentcountry", 
         type: "lookup", 
         showType: "multiselect", 
