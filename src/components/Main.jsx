@@ -32,6 +32,7 @@ class Main extends React.Component {
         this.getOptionSetMetadata = this.getOptionSetMetadata.bind(this)
         this.getLookUpMetadata = this.getLookUpMetadata.bind(this)
         this.promiseRetrieveRecords = this.promiseRetrieveRecords.bind(this)
+        this.onChangePage = this.onChangePage.bind(this)
         this.state = {
           data: [],
           showData: false,
@@ -117,6 +118,10 @@ class Main extends React.Component {
     // custom function
     onRowClick(event, rowData) {
       window.Xrm.Utility.openEntityForm(EntityName, rowData[EntityPrimaryIDName], null, {openInNewWindow: true})
+    }
+
+    onChangePage(e, pg) {
+      
     }
 
     dsiplaySearch() {
@@ -572,6 +577,7 @@ class Main extends React.Component {
                 />
               <MaterialTable
                 onRowClick={this.onRowClick}
+                onChangePage={this.onChangePage}
                 columns={fieldsConfig}
                 data={data}
                 options={{
