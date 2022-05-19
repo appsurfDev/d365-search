@@ -1,5 +1,5 @@
 import React from 'react';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable from 'material-table';
 import {
   Avatar,
   CssBaseline,
@@ -31,11 +31,14 @@ class Main extends React.Component {
         this.onRemove = this.onRemove.bind(this)
         this.getOptionSetMetadata = this.getOptionSetMetadata.bind(this)
         this.getLookUpMetadata = this.getLookUpMetadata.bind(this)
+        this.promiseRetrieveRecords = this.promiseRetrieveRecords.bind(this)
         this.state = {
           data: [],
           showData: false,
-          loading: false
+          loading: false,
+          pageNumber: 1
         }
+        
         var self = this
         fieldsConfig.forEach((f) => {
           switch(f.type) {
@@ -125,9 +128,8 @@ class Main extends React.Component {
       window.location.href = url.href;
     }
 
-    onSubmit() {
+    async onSubmit() {
       this.setState({ loading: true, showData: false, data: [] })
-      var self = this
 
       var attributeXml = ""
       var filterXml = ""
@@ -230,8 +232,7 @@ class Main extends React.Component {
         }
       })
 
-      var fetchXml = `<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
-        <entity name='${EntityName}' >
+      var queryXml = `<entity name='${EntityName}' >
           ${attributeXml}
           <filter type='and' >
             ${filterXml}
@@ -240,77 +241,24 @@ class Main extends React.Component {
         </entity>
       </fetch>`;
 
-      console.log("fetchXml: ", fetchXml)
-      var query = "?fetchXml=" + encodeURIComponent(fetchXml)
+      console.log("queryXml: ", queryXml)
 
-      window.Xrm.WebApi.retrieveMultipleRecords(EntityName, query).then(
-        function success(result) {
-          console.log("result: ", result)
-          if (result.entities.length === 0) {
-            window.alert("There is no any data match the query.")
-            self.setState({ 
-              loading: false, 
-              showData: false,
-            })
-          }
-          else {
-            var entities = result.entities
-            console.log("entities: ", entities)
-            entities.forEach((e) => {
-              fieldsConfig.forEach((f) => {
-                if(f.linkEntityConfig.isLinkEntity) {
-                  switch (f.type) {
-                    case "string":
-                      if(f.linkEntityConfig.isSubLinkEntity) {
-                        if(e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]) {
-                          e[f.field] = e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]
-                        }
-                      }
-                      else {
-                        if(e[`${f.linkEntityConfig.alias}.${f.field}`]) {
-                          e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}`]
-                        }
-                      }
-                      break;
-                    case "lookup":
-                      if(e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]) {
-                        e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]
-                      }
-                      else {
-                        e[f.field] = null
-                      }
-                      break;
-                    default:
-                      break;
-                  }
-                }
-                else {
-                    switch (f.type) {
-                      case "lookup":
-                        e[f.field] = e[`_${f.field}_value@OData.Community.Display.V1.FormattedValue`]
-                        break;
-                      default:
-                        break;
-                  }
-                }
-              })
-            })
-            self.setState({ 
-              data: entities,
-              loading: false, 
-              showData: true 
-            })
-          }
-        },
-        function (error) {
-            window.alert("Error: " + error.message)
-            self.setState({ 
-              data: [],
-              loading: false, 
-              showData: false
-            })
-        }
-      );
+      var entities = await this.fetchRecords(queryXml, false, null, null, null)
+      console.log("entities: ", entities)
+
+      if(entities.length === 0) {
+        this.setState({
+          loading: false, 
+          showData: false,
+        })
+      }
+      else {
+        this.setState({ 
+          data: entities,
+          loading: false, 
+          showData: true 
+        })
+      }
     }
 
     onClear() {
@@ -370,6 +318,88 @@ class Main extends React.Component {
         return result.entities
       }
       window.alert(`Get lookup ${config.entityName} return no data`)
+    }
+
+    // custom common function
+    async fetchRecords(queryXml, fetchNextRecords, pageNumber, firstRecordID, lastRecordID) {
+      console.log("fetch records")
+
+      var entities = []
+      
+      var fetch = ""
+
+      if(fetchNextRecords) {
+        fetch = "<fetch page='"+ (pageNumber + 1) +"' paging-cookie='&lt;cookie page=&quot;" + pageNumber + "&quot;&gt;&lt;productid last=&quot;" + lastRecordID +"&quot; first=&quot;" + firstRecordID + "&quot; /&gt;&lt;/cookie&gt;'>";
+      }
+      else {
+        fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>";
+      }
+
+      fetch += queryXml
+      console.log("fetchXml: ", fetch)
+      fetch = "?fetchXml=" + encodeURIComponent(fetch)
+
+      entities = await this.promiseRetrieveRecords(fetch)
+      return entities
+    }
+
+    promiseRetrieveRecords(fetch) {
+      return new Promise(function(resolve, reject) {
+        window.Xrm.WebApi.retrieveMultipleRecords(EntityName, fetch).then(
+          function success(result) {
+            console.log("result: ", result)
+            if (result.entities.length === 0) {
+            }
+            else {
+              var entities = result.entities
+              entities.forEach((e) => {
+                fieldsConfig.forEach((f) => {
+                  if(f.linkEntityConfig.isLinkEntity) {
+                    switch (f.type) {
+                      case "string":
+                        if(f.linkEntityConfig.isSubLinkEntity) {
+                          if(e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]) {
+                            e[f.field] = e[`${f.linkEntityConfig.subLinkEntityConfig.alias}.${f.field}`]
+                          }
+                        }
+                        else {
+                          if(e[`${f.linkEntityConfig.alias}.${f.field}`]) {
+                            e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}`]
+                          }
+                        }
+                        break;
+                      case "lookup":
+                        if(e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]) {
+                          e[f.field] = e[`${f.linkEntityConfig.alias}.${f.field}@OData.Community.Display.V1.FormattedValue`]
+                        }
+                        else {
+                          e[f.field] = null
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+                  else {
+                      switch (f.type) {
+                        case "lookup":
+                          e[f.field] = e[`_${f.field}_value@OData.Community.Display.V1.FormattedValue`]
+                          break;
+                        default:
+                          break;
+                    }
+                  }
+                })
+              })
+
+              resolve(entities)
+            }
+          },
+          function (error) {
+            window.alert("Error: " + error.message)
+          }
+        );
+      })
     }
 
     render() {
