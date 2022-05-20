@@ -37,7 +37,6 @@ class Main extends React.Component {
           data: [],
           showData: false,
           loading: false,
-          pageNumber: 1
         }
         
         var self = this
@@ -248,7 +247,25 @@ class Main extends React.Component {
 
       console.log("queryXml: ", queryXml)
 
-      var entities = await this.fetchRecords(queryXml, false, null, null, null)
+      var entities = []
+      var moreEntities = []
+      var firstFetch = true
+      var pageNumber = 1
+
+      do {
+        if(firstFetch) {
+          moreEntities = await this.fetchRecords(queryXml, false, null, null, null)
+          firstFetch = false
+        }
+        else {
+          var firstRecordID = entities[0].contactid
+          var lastRecordID = entities[4999].contactid
+          moreEntities = await this.fetchRecords(queryXml, true, pageNumber, firstRecordID, lastRecordID)
+        }
+        pageNumber += 1
+        entities = entities.concat(moreEntities)
+      } while (moreEntities.length >= 5000)
+
       console.log("entities: ", entities)
 
       if(entities.length === 0) {
@@ -334,7 +351,7 @@ class Main extends React.Component {
       var fetch = ""
 
       if(fetchNextRecords) {
-        fetch = "<fetch page='"+ (pageNumber + 1) +"' paging-cookie='&lt;cookie page=&quot;" + pageNumber + "&quot;&gt;&lt;productid last=&quot;" + lastRecordID +"&quot; first=&quot;" + firstRecordID + "&quot; /&gt;&lt;/cookie&gt;'>";
+        fetch = "<fetch page='"+ (pageNumber + 1) +"' paging-cookie='&lt;cookie page=&quot;" + pageNumber + "&quot;&gt;&lt;contactid last=&quot;" + lastRecordID +"&quot; first=&quot;" + firstRecordID + "&quot; /&gt;&lt;/cookie&gt;'>";
       }
       else {
         fetch = "<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>";
